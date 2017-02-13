@@ -45,7 +45,8 @@ def distance_between_points(xy1, xy2):
     return dis
 
 
-def calc():
+def calc(a):
+
     return
 
 root = Tk()
