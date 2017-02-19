@@ -21,7 +21,7 @@ class Ui_MainWindow(object):
         self.image.setObjectName("image")
         self.dial = QtWidgets.QDial(self.centralwidget)
         self.dial.setGeometry(QtCore.QRect(540, 290, 50, 64))
-        self.dial.setMaximum(180)
+        self.dial.setMaximum(360)
         self.dial.setSingleStep(10)
         self.dial.setPageStep(30)
         self.dial.setWrapping(True)
