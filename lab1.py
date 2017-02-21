@@ -16,7 +16,6 @@ def draw(event):
     cnv.delete('all')
     layout()
 
-
     cir1, cir2, inter, l1, l2 = calc(a, b)
     if cir1 is None:
         showwarning('Упс', "Окружностей не найдено!")
@@ -28,8 +27,8 @@ def draw(event):
                         (cir1[0][0] + cir1[1]) * scale + 10, (cir1[0][1] - cir1[1]) * scale + 10, fill='#FFF0F5')
         cnv.create_oval((cir2[0][0] - cir2[1]) * scale + 10, (cir2[0][1] + cir2[1]) * scale + 10,
                         (cir2[0][0] + cir2[1]) * scale + 10, (cir2[0][1] - cir2[1]) * scale + 10, fill='#E6E6FA')
-        cnv.create_oval((cir1[0][0] - 0.2) * scale +10, (cir1[0][1] - 0.2) * scale + 10, (cir1[0][0] + 0.2) * scale + 10,
-                        (cir1[0][1] + 0.2) *scale + 10, fil='#DB7093')
+        cnv.create_oval((cir1[0][0] - 0.2) * scale + 10, (cir1[0][1] - 0.2) * scale + 10, (cir1[0][0] + 0.2) * scale + 10,
+                        (cir1[0][1] + 0.2) * scale + 10, fil='#DB7093')
         cnv.create_oval((cir2[0][0] - 0.2) * scale + 10, (cir2[0][1] - 0.2) * scale + 10,
                         (cir2[0][0] + 0.2) * scale + 10,
                         (cir2[0][1] + 0.2) * scale + 10, fil='#9370DB')
@@ -45,8 +44,12 @@ def draw(event):
         cnv.create_oval((b[i][0] - 0.2) * scale + 10, (b[i][1] - 0.2) * scale + 10, (b[i][0] + 0.2) * scale + 10,
                         (b[i][1] + 0.2) * scale + 10, fill="red")
 
-
-
+    tx.delete('1.0', END)
+    tx.insert(1.0, "Окружности найдены. \n "
+                   "Окружность 1: ее радиус {0:.2f}, координаты центра ({1:.2f}, {2:.2f}) \n"
+                   "Окружность 2: ее радиус {3:.2f}, координаты центра ({4:.2f}, {5:.2f}) \n"
+                   "Точка пересечения касательных {6:.2f}".format(cir1[1], cir1[0][0], cir1[0][1], cir2[1], cir2[0][0],
+                                                           cir2[0][1], inter[0], inter[1]))
 
 
 def redraw(event):
@@ -113,13 +116,19 @@ def calc(a, b):
                 for l in range(len(b) - 2):  # первая связка-точка
                     for m in range(l + 1, len(b) - 1):  # вторая связка-точка
                         for n in range(m + 1, len(b)):  # третья связка-точка
-                            res= find_cir(b[l], b[m], b[n])
+                            res = find_cir(b[l], b[m], b[n])
                             # print(b[i], b[j], b[k], centre_b, rad_b)
                             if res is None:
                                 continue
                             else:
                                 centre_b = res[0]
                                 rad_b = res[1]
+
+                            look_dis = distance_between_points(centre_b, centre_a)
+                            if look_dis <= rad_a + rad_b:
+                                continue
+
+                            look_dis = distance_between_points(centre_b, b[i])
 
                             # находим все прямые проходящие через эти точки
                             line_il = get_line(a[i], b[l])
@@ -272,8 +281,9 @@ but_exit['text'] = 'Выход'
 
 ent1 = Entry(widgets, width=50, bd=3)
 ent2 = Entry(widgets, width=50, bd=3)
-ent1.insert(0, '1.70,4.852 6.5,4.852 4,6')
-ent2.insert(0, '2.7,9.453 5.3,9.453 4,9')
+tx = Text(root, width=700, height=4, font='Times 12')
+ent1.insert(0, '1.70,4.852 6.5,4.852 4,6 10,12.34 23.9,12')
+ent2.insert(0, '2.7,9.453 23.5,14 5.3,9.453 4,9 23,34 3,4')
 lab1 = Label(widgets, text="Первое можество точек:", font="Times 12", highlightcolor='red')
 lab2 = Label(widgets, text="Второе можество точек:", font="Times 12", highlightcolor='green')
 
@@ -286,6 +296,7 @@ lab1.pack()
 ent1.pack()
 ent1.focus_set()
 lab2.pack()
+tx.pack()
 ent2.pack()
 but_answ.pack()
 but_scale.pack()
