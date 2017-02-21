@@ -128,7 +128,6 @@ def calc(a, b):
                             if look_dis <= rad_a + rad_b:
                                 continue
 
-                            look_dis = distance_between_points(centre_b, b[i])
 
                             # находим все прямые проходящие через эти точки
                             line_il = get_line(a[i], b[l])
@@ -282,7 +281,7 @@ but_exit['text'] = 'Выход'
 ent1 = Entry(widgets, width=50, bd=3)
 ent2 = Entry(widgets, width=50, bd=3)
 tx = Text(root, width=700, height=4, font='Times 12')
-ent1.insert(0, '1.70,4.852 6.5,4.852 4,6 10,12.34 23.9,12')
+ent1.insert(0, '1.70,4.852 6.5,4.852 4,6 10,12.34 23.9,12 2,1')
 ent2.insert(0, '2.7,9.453 23.5,14 5.3,9.453 4,9 23,34 3,4')
 lab1 = Label(widgets, text="Первое можество точек:", font="Times 12", highlightcolor='red')
 lab2 = Label(widgets, text="Второе можество точек:", font="Times 12", highlightcolor='green')
