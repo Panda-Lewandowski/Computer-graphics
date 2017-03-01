@@ -5,7 +5,7 @@ import math
 
 
 def draw(event):
-    global f_lst, r_lst, scale, dx, dy
+    global f_lst, r_lst, scale, dx, dy, redraw_scale, redraw_d
 
     a = []
     b = []
@@ -24,11 +24,14 @@ def draw(event):
     cir1, cir2, inter, l1, l2, sq = calc(a, b)
     if cir1 is None:
         showwarning('Упс', "Окружностей не найдено!")
-
-    if inter[0] < 0 or inter[1] < 0:
-        dx += 300
-        dy += 350
     else:
+        if (inter[0] < 0 or inter[1] < 0) and redraw_d is False:
+            dx = 300
+            dy = 200
+            redraw_d = True
+        if distance_between_points(cir1[0], cir2[0]) <= 10 and redraw_scale is False:
+            scale = 20
+            redraw_scale = True
 
         cnv.create_oval((cir1[0][0] - cir1[1]) * scale + dx, (cir1[0][1] + cir1[1]) * scale + dy,
                         (cir1[0][0] + cir1[1]) * scale + dx, (cir1[0][1] - cir1[1]) * scale + dy, fill='#FFF0F5')
@@ -36,15 +39,16 @@ def draw(event):
         cnv.create_oval((cir2[0][0] - cir2[1]) * scale + dx, (cir2[0][1] + cir2[1]) * scale + dy,
                         (cir2[0][0] + cir2[1]) * scale + dx, (cir2[0][1] - cir2[1]) * scale + dy, fill='#E6E6FA')
 
-        cnv.create_oval((cir1[0][0] - 0.2) * scale + dx, (cir1[0][1] - 0.2) * scale + dy, (cir1[0][0] + 0.2) * scale + dx,
-                        (cir1[0][1] + 0.2) * scale + dy, fil='#DB7093')
+        cnv.create_oval((cir1[0][0]) * scale + dx - 1.5, (cir1[0][1]) * scale + dy - 1.5,
+                        (cir1[0][0]) * scale + dx + 1.5,
+                        (cir1[0][1]) * scale + dy + 1.5, fil='#DB7093')
 
-        cnv.create_oval((cir2[0][0] - 0.2) * scale + dx, (cir2[0][1] - 0.2) * scale + dy,
-                        (cir2[0][0] + 0.2) * scale + dx,
-                        (cir2[0][1] + 0.2) * scale + dy, fil='#9370DB')
+        cnv.create_oval((cir2[0][0]) * scale + dx - 1.5, (cir2[0][1]) * scale + dy - 1.5,
+                        (cir2[0][0]) * scale + dx + 1.5,
+                        (cir2[0][1]) * scale + dy + 1.5, fil='#9370DB')
 
-        cnv.create_oval((inter[0] - 0.2) * scale + dx, (inter[1] - 0.2) * scale + dy, (inter[0] + 0.2) * scale + dx,
-                    (inter[1] + 0.2) * scale + dy, fill="black")
+        cnv.create_oval((inter[0]) * scale + dx - 1.5, (inter[1]) * scale + dy - 1.5, (inter[0]) * scale + dx + 1.5,
+                        (inter[1]) * scale + dy + 1.5, fill="black")
         cnv.create_line(l1[0][0] * scale + dx, l1[0][1] * scale + dy, l1[1][0] * scale + dx, l1[1][1] * scale + dy,
                         width=1, fill="black")
         cnv.create_line(l2[0][0] * scale + dx, l2[0][1] * scale + dy, l2[1][0] * scale + dx, l2[1][1] * scale + dy,
@@ -60,18 +64,19 @@ def draw(event):
                         width=1, fill="black")
     layout()
     for i in range(len(a)):
-        cnv.create_oval((a[i][0] - 0.2) * scale + dx, (a[i][1] - 0.2) * scale + dy, (a[i][0] + 0.2) * scale + dx,
-                        (a[i][1] + 0.2) * scale + dy, fill="green")
+        cnv.create_oval(a[i][0] * scale + dx - 1.5, (a[i][1]) * scale + dy - 1.5, a[i][0] * scale + dx + 1.5,
+                        (a[i][1]) * scale + dy + 1.5, fill="green")
     for i in range(len(b)):
-        cnv.create_oval((b[i][0] - 0.2) * scale + dx, (b[i][1] - 0.2) * scale + dy, (b[i][0] + 0.2) * scale + dx,
-                        (b[i][1] + 0.2) * scale + dy, fill="red")
+        cnv.create_oval((b[i][0]) * scale + dx - 1.5, (b[i][1]) * scale + dy - 1.5, (b[i][0]) * scale + dx + 1.5,
+                        (b[i][1]) * scale + dy + 1.5, fill="red")
 
     tx.delete('1.0', END)
     tx.insert(1.0, "Окружности найдены. Минимальная площадь: {0:.3f} \n "
                    "Окружность 1: ее радиус {1:.2f}, координаты центра ({2:.2f}, {3:.2f}) \n"
                    "Окружность 2: ее радиус {4:.2f}, координаты центра ({5:.2f}, {6:.2f}) \n"
-                   "Точка пересечения касательных {7:.2f}".format(sq, cir1[1], cir1[0][0], cir1[0][1], cir2[1], cir2[0][0],
-                                                           cir2[0][1], inter[0], inter[1]))
+                   "Точка пересечения касательных {7:.2f}".format(sq, cir1[1], cir1[0][0], cir1[0][1], cir2[1],
+                                                                  cir2[0][0],
+                                                                  cir2[0][1], inter[0], inter[1]))
 
 
 def layout():
@@ -179,21 +184,22 @@ def calc(a, b):
                             if look_dis <= rad_a + rad_b:
                                 continue
 
-
-
-                            k = rad_a / rad_b # коэфициент подобия
+                            k = rad_a / rad_b  # коэфициент подобия
 
                             xm = (centre_a[0] + centre_b[0] * k) / (1 + k)  # точка пересечения касательных
                             ym = (centre_a[1] + centre_b[1] * k) / (1 + k)
 
                             r = math.sqrt(distance_between_points([xm, ym], centre_a) ** 2 - rad_a ** 2)
 
-                            d = math.sqrt(math.pow(abs(centre_a[0] - xm), 2) + math.pow(abs(centre_a[1] - ym), 2))  # расстояние между центрами окружностей
+                            d = math.sqrt(math.pow(abs(centre_a[0] - xm), 2) + math.pow(abs(centre_a[1] - ym),
+                                                                                        2))  # расстояние между центрами окружностей
                             if d >= r + rad_a:
                                 continue
 
-                            aa = (r**2 - rad_a**2 + d**2) / (2*d)  # расстояние от r до точки пересечения линии, соединяющей точки пересечения
-                            h = math.sqrt(math.pow(r, 2) - math.pow(aa ,2))  # //расстояние от точки пересеч окружностей до линииб соед т пересеч
+                            aa = (r ** 2 - rad_a ** 2 + d ** 2) / (
+                                2 * d)  # расстояние от r до точки пересечения линии, соединяющей точки пересечения
+                            h = math.sqrt(math.pow(r, 2) - math.pow(aa,
+                                                                    2))  # //расстояние от точки пересеч окружностей до линииб соед т пересеч
 
                             x0 = xm + aa * (centre_a[0] - xm) / d  # точка пересеч линии соединения и линии центров
                             y0 = ym + aa * (centre_a[1] - ym) / d
@@ -202,18 +208,21 @@ def calc(a, b):
                                     y0 - h * (centre_a[0] - xm) / d]
                             down_a = [x0 - h * (centre_a[1] - ym) / d,
                                       y0 + h * (centre_a[0] - xm) / d]
-                            #print(up_a, '\n', down_a, '\n')
+                            # print(up_a, '\n', down_a, '\n')
 
                             # _________________________________________________________________
 
                             r = math.sqrt(distance_between_points([xm, ym], centre_b) ** 2 - rad_b ** 2)
 
-                            d = math.sqrt(math.pow(abs(centre_b[0] - xm), 2) + math.pow(abs(centre_b[1] - ym), 2))  # расстояние между центрами окружностей
+                            d = math.sqrt(math.pow(abs(centre_b[0] - xm), 2) + math.pow(abs(centre_b[1] - ym),
+                                                                                        2))  # расстояние между центрами окружностей
                             if d >= r + rad_b:
                                 continue
 
-                            aa = (r ** 2 - rad_b ** 2 + d ** 2) / (2 * d)  # расстояние от r до точки пересечения линии, соединяющей точки пересечения
-                            h = math.sqrt(math.pow(r, 2) - math.pow(aa, 2))  # //расстояние от точки пересеч окружностей до линииб соед т пересеч
+                            aa = (r ** 2 - rad_b ** 2 + d ** 2) / (
+                                2 * d)  # расстояние от r до точки пересечения линии, соединяющей точки пересечения
+                            h = math.sqrt(math.pow(r, 2) - math.pow(aa,
+                                                                    2))  # //расстояние от точки пересеч окружностей до линииб соед т пересеч
 
                             x0 = xm + aa * (centre_b[0] - xm) / d  # точка пересеч линии соединения и линии центров
                             y0 = ym + aa * (centre_b[1] - ym) / d
@@ -222,7 +231,7 @@ def calc(a, b):
                                     y0 - h * (centre_b[0] - xm) / d]
                             down_b = [x0 - h * (centre_b[1] - ym) / d,
                                       y0 + h * (centre_b[0] - xm) / d]
-                            #print(up_b, '\n', down_b, '\n')
+                            # print(up_b, '\n', down_b, '\n')
 
 
                             d1 = distance_between_points(up_a, down_a)
@@ -293,17 +302,50 @@ def insert_lst_s(event):
     p = str_to_float(p)
     if p is None:
         return
-    if len(p) > 2:
+    if len(p) > 2 or len(p) < 2:
         showwarning('Упс', "У точки должно быть всего две координаты!")
         return
     r_lst.insert(END, p)
     ent_s.delete(0, END)
 
 
-def del_point(event):
-    global f_lst, r_lst
-    print(f_lst.get(ACTIVE))
-    print(r_lst.get(ACTIVE))
+def del_point_red(event):
+    global f_lst
+    f_lst.delete(ACTIVE)
+
+
+def del_point_green(event):
+    global r_lst
+    r_lst.delete(ACTIVE)
+
+
+def ch_point_red(event):
+    global f_lst
+    p = ent_f.get()
+    p = str_to_float(p)
+    if p is None:
+        return
+    if len(p) > 2 or len(p) < 2:
+        showwarning('Упс', "У точки должно быть всего две координаты!")
+        return
+    f_lst.delete(ACTIVE)
+    f_lst.insert(END, p)
+    ent_f.delete(0, END)
+
+
+def ch_point_green(event):
+    global r_lst
+    p = ent_s.get()
+    p = str_to_float(p)
+    if p is None:
+        return
+    if len(p) > 2 or len(p) < 2:
+        showwarning('Упс', "У точки должно быть всего две координаты!")
+        return
+    r_lst.delete(ACTIVE)
+    r_lst.insert(END, p)
+    ent_s.delete(0, END)
+
 
 root = Tk()
 root.title("Поле точек")
@@ -312,13 +354,15 @@ r.title("Инструменты")
 navigation = Tk()
 navigation.title("Навигация")
 root.geometry('700x600')
-r.wm_geometry("+%d+%d" % (100, 100))
-root.wm_geometry("+%d+%d" % (600, 50))
-navigation.wm_geometry("+%d+%d" % (150, 550))
+r.wm_geometry("+%d+%d" % (10, 10))
+root.wm_geometry("+%d+%d" % (650, 10))
+navigation.wm_geometry("+%d+%d" % (150, 400))
 
 scale = 9
 dx = 10
 dy = 10
+redraw_scale = False
+redraw_d = False
 scale_p = ttk.Button(navigation)
 scale_p['text'] = "Увеличить"
 scale_m = ttk.Button(navigation)
@@ -344,12 +388,15 @@ xy_f = Label(r, text='Введите красную точку  ', font="Times 1
 xy_s = Label(r, text='Введите зеленую точку  ', font="Times 12")
 ent_f = Entry(r, width=50, bd=3)
 ent_s = Entry(r, width=50, bd=3)
-but_change = ttk.Button(r)
-but_change['text'] = 'Изменить'
-but_del = ttk.Button(r)
-but_del['text'] = 'Удалить'
 
-
+but_del_r = ttk.Button(r)
+but_del_r['text'] = 'Удалить красную точку'
+but_del_g = ttk.Button(r)
+but_del_g['text'] = 'Удалить зеленую точку'
+but_ch_r = ttk.Button(r)
+but_ch_r['text'] = 'Изменить красную точку'
+but_ch_g = ttk.Button(r)
+but_ch_g['text'] = 'Изменить зеленую точку'
 but_answ = ttk.Button(r)
 but_answ["text"] = "Отобразить ответ"
 but_exit = ttk.Button(r)
@@ -357,8 +404,10 @@ but_exit['text'] = 'Выход'
 
 ent_f.bind('<Return>', insert_lst_f)
 ent_s.bind('<Return>', insert_lst_s)
-but_del.bind('<Button-1>', del_point)
-
+but_del_r.bind('<Button-1>', del_point_red)
+but_del_g.bind('<Button-1>', del_point_green)
+but_ch_r.bind('<Button-1>', ch_point_red)
+but_ch_g.bind('<Button-1>', ch_point_green)
 
 cnv = Canvas(root, height=600, width=700, bg='white')
 tx = Text(root, width=700, height=4, font='Times 12')
@@ -372,6 +421,13 @@ top.bind('<Button-1>', to_top)
 bottom.bind('<Button-1>', to_bottom)
 but_exit.bind('<Button-1>', quit_win)
 
+"""var=IntVar()
+var.set(1)
+rad0 = Radiobutton(r,text="Первая",
+          variable=var,value=0)
+rad1 = Radiobutton(r,text="Вторая",
+          variable=var,value=1)"""
+
 f_lst.grid(row=1, column=0, padx=10)
 r_lst.grid(row=1, column=1, padx=10)
 lab_f.grid(row=0, column=0, padx=5)
@@ -380,15 +436,16 @@ xy_f.grid(row=2, column=0, pady=5)
 ent_f.grid(row=2, column=1, pady=5)
 xy_s.grid(row=3, column=0, pady=5)
 ent_s.grid(row=3, column=1, pady=5)
-but_change.grid(row=4, column=0, padx=10, pady=5)
-but_del.grid(row=5, column=0, padx=10, pady=5)
-but_answ.grid(row=4, column=1, padx=10, pady=5)
-but_exit.grid(row=5, column=1, padx=10, pady=5)
 
+but_del_r.grid(row=4, column=0, padx=2, pady=5)
+but_del_g.grid(row=5, column=0, padx=2, pady=5)
+but_answ.grid(row=4, column=2, padx=2, pady=5)
+but_exit.grid(row=5, column=2, padx=2, pady=5)
+but_ch_r.grid(row=4, column=1, padx=2, pady=5)
+but_ch_g.grid(row=5, column=1, padx=2, pady=5)
 
 tx.pack()
 cnv.pack()
-
 
 scale_p.grid(row=0, column=0, padx=20)
 scale_m.grid(row=1, column=0, padx=20, pady=5)
