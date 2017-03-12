@@ -169,6 +169,7 @@ window.btn_trans.clicked.connect(transfer)
 window.btn_scale.clicked.connect(scale)
 window.btn_turn.clicked.connect(turn)
 window.btn_back.clicked.connect(set)
+window.btn_undo.clicked.connect(undo)
 window.show()
 
 
