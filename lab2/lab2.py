@@ -38,6 +38,7 @@ def scale():
     sc_x = window.spin_scl_x.value()
     sc_y = window.spin_scl_y.value()
     ky = window.spin_ky.value()
+    #print(kx, ky)
 
     scene.clear()
     epi_x = [x * kx + (1 - kx) * sc_x for x in epi_x]
@@ -46,6 +47,7 @@ def scale():
     p2 = [p2[0] * kx + (1 - kx) * sc_x, p2[1] * ky + (1 - ky) * sc_y]
     p3 = [p3[0] * kx + (1 - kx) * sc_x, p3[1] * ky + (1 - ky) * sc_y]
     p4 = [p4[0] * kx + (1 - kx) * sc_x, p4[1] * ky + (1 - ky) * sc_y]
+    #print(p1.x)
 
     rect[0] = QPointF(p1[0], p1[1])
     rect[1] = QPointF(p2[0], p2[1])

@@ -45,6 +45,9 @@
     <property name="buttonSymbols">
      <enum>QAbstractSpinBox::PlusMinus</enum>
     </property>
+    <property name="minimum">
+     <double>-1000.000000000000000</double>
+    </property>
     <property name="maximum">
      <double>1000.000000000000000</double>
     </property>
@@ -66,6 +69,9 @@
     </property>
     <property name="buttonSymbols">
      <enum>QAbstractSpinBox::PlusMinus</enum>
+    </property>
+    <property name="minimum">
+     <double>-1000.000000000000000</double>
     </property>
     <property name="maximum">
      <double>1000.000000000000000</double>
@@ -146,6 +152,9 @@
     <property name="buttonSymbols">
      <enum>QAbstractSpinBox::PlusMinus</enum>
     </property>
+    <property name="minimum">
+     <double>-1000.000000000000000</double>
+    </property>
     <property name="maximum">
      <double>1000.000000000000000</double>
     </property>
@@ -189,6 +198,9 @@
     </property>
     <property name="buttonSymbols">
      <enum>QAbstractSpinBox::PlusMinus</enum>
+    </property>
+    <property name="minimum">
+     <double>-1000.000000000000000</double>
     </property>
     <property name="maximum">
      <double>1000.000000000000000</double>
@@ -294,6 +306,9 @@
     <property name="buttonSymbols">
      <enum>QAbstractSpinBox::PlusMinus</enum>
     </property>
+    <property name="minimum">
+     <double>-1000.000000000000000</double>
+    </property>
     <property name="maximum">
      <double>1000.000000000000000</double>
     </property>
@@ -315,6 +330,9 @@
     </property>
     <property name="buttonSymbols">
      <enum>QAbstractSpinBox::PlusMinus</enum>
+    </property>
+    <property name="minimum">
+     <double>-1000.000000000000000</double>
     </property>
     <property name="maximum">
      <double>1000.000000000000000</double>
