@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1015</width>
-    <height>535</height>
+    <width>826</width>
+    <height>556</height>
    </rect>
   </property>
   <property name="font">
@@ -23,9 +23,9 @@
    <widget class="QGraphicsView" name="mainview">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>711</width>
+      <x>10</x>
+      <y>20</y>
+      <width>511</width>
       <height>531</height>
      </rect>
     </property>
@@ -33,7 +33,7 @@
    <widget class="QRadioButton" name="cda">
     <property name="geometry">
      <rect>
-      <x>740</x>
+      <x>550</x>
       <y>10</y>
       <width>221</width>
       <height>21</height>
@@ -52,7 +52,7 @@
    <widget class="QRadioButton" name="br_float">
     <property name="geometry">
      <rect>
-      <x>740</x>
+      <x>550</x>
       <y>40</y>
       <width>231</width>
       <height>20</height>
@@ -71,7 +71,7 @@
    <widget class="QRadioButton" name="br_int">
     <property name="geometry">
      <rect>
-      <x>740</x>
+      <x>550</x>
       <y>70</y>
       <width>201</width>
       <height>20</height>
@@ -90,7 +90,7 @@
    <widget class="QRadioButton" name="br_smooth">
     <property name="geometry">
      <rect>
-      <x>740</x>
+      <x>550</x>
       <y>100</y>
       <width>261</width>
       <height>20</height>
@@ -109,7 +109,7 @@
    <widget class="QRadioButton" name="lib">
     <property name="geometry">
      <rect>
-      <x>740</x>
+      <x>550</x>
       <y>130</y>
       <width>261</width>
       <height>20</height>
@@ -128,8 +128,8 @@
    <widget class="QPushButton" name="btn_bground">
     <property name="geometry">
      <rect>
-      <x>720</x>
-      <y>160</y>
+      <x>530</x>
+      <y>190</y>
       <width>221</width>
       <height>41</height>
      </rect>
@@ -147,8 +147,8 @@
    <widget class="QGraphicsView" name="bground_color">
     <property name="geometry">
      <rect>
-      <x>950</x>
-      <y>170</y>
+      <x>760</x>
+      <y>200</y>
       <width>41</width>
       <height>20</height>
      </rect>
@@ -157,8 +157,8 @@
    <widget class="QGraphicsView" name="line_color">
     <property name="geometry">
      <rect>
-      <x>950</x>
-      <y>210</y>
+      <x>760</x>
+      <y>240</y>
       <width>41</width>
       <height>20</height>
      </rect>
@@ -167,8 +167,8 @@
    <widget class="QPushButton" name="btn_line">
     <property name="geometry">
      <rect>
-      <x>720</x>
-      <y>200</y>
+      <x>530</x>
+      <y>230</y>
       <width>221</width>
       <height>41</height>
      </rect>
@@ -186,8 +186,8 @@
    <widget class="QLabel" name="begin_point">
     <property name="geometry">
      <rect>
-      <x>720</x>
-      <y>250</y>
+      <x>530</x>
+      <y>280</y>
       <width>161</width>
       <height>16</height>
      </rect>
@@ -205,8 +205,8 @@
    <widget class="QLabel" name="end_point">
     <property name="geometry">
      <rect>
-      <x>720</x>
-      <y>280</y>
+      <x>530</x>
+      <y>310</y>
       <width>171</width>
       <height>16</height>
      </rect>
@@ -224,8 +224,8 @@
    <widget class="QSpinBox" name="begin_x">
     <property name="geometry">
      <rect>
-      <x>890</x>
-      <y>250</y>
+      <x>700</x>
+      <y>280</y>
       <width>61</width>
       <height>24</height>
      </rect>
@@ -234,59 +234,59 @@
      <number>0</number>
     </property>
     <property name="maximum">
-     <number>711</number>
+     <number>511</number>
     </property>
    </widget>
    <widget class="QSpinBox" name="begin_y">
     <property name="geometry">
      <rect>
-      <x>950</x>
-      <y>250</y>
+      <x>760</x>
+      <y>280</y>
       <width>61</width>
       <height>24</height>
      </rect>
     </property>
     <property name="maximum">
-     <number>531</number>
+     <number>511</number>
     </property>
    </widget>
    <widget class="QSpinBox" name="end_x">
     <property name="geometry">
      <rect>
-      <x>890</x>
-      <y>280</y>
+      <x>700</x>
+      <y>310</y>
       <width>61</width>
       <height>24</height>
      </rect>
     </property>
     <property name="maximum">
-     <number>711</number>
+     <number>511</number>
     </property>
     <property name="value">
-     <number>355</number>
+     <number>255</number>
     </property>
    </widget>
    <widget class="QSpinBox" name="end_y">
     <property name="geometry">
      <rect>
-      <x>950</x>
-      <y>280</y>
+      <x>760</x>
+      <y>310</y>
       <width>61</width>
       <height>24</height>
      </rect>
     </property>
     <property name="maximum">
-     <number>531</number>
+     <number>511</number>
     </property>
     <property name="value">
-     <number>265</number>
+     <number>255</number>
     </property>
    </widget>
    <widget class="QPushButton" name="draw_line">
     <property name="geometry">
      <rect>
-      <x>750</x>
-      <y>310</y>
+      <x>560</x>
+      <y>340</y>
       <width>221</width>
       <height>41</height>
      </rect>
@@ -304,8 +304,8 @@
    <widget class="Line" name="line">
     <property name="geometry">
      <rect>
-      <x>720</x>
-      <y>240</y>
+      <x>530</x>
+      <y>270</y>
       <width>281</width>
       <height>16</height>
      </rect>
@@ -317,8 +317,8 @@
    <widget class="Line" name="line_2">
     <property name="geometry">
      <rect>
-      <x>720</x>
-      <y>350</y>
+      <x>530</x>
+      <y>380</y>
       <width>281</width>
       <height>16</height>
      </rect>
@@ -330,8 +330,8 @@
    <widget class="QPushButton" name="draw_sun">
     <property name="geometry">
      <rect>
-      <x>750</x>
-      <y>420</y>
+      <x>560</x>
+      <y>450</y>
       <width>221</width>
       <height>41</height>
      </rect>
@@ -349,8 +349,8 @@
    <widget class="QSpinBox" name="spin_angle">
     <property name="geometry">
      <rect>
-      <x>890</x>
-      <y>390</y>
+      <x>700</x>
+      <y>420</y>
       <width>121</width>
       <height>24</height>
      </rect>
@@ -359,14 +359,14 @@
      <number>360</number>
     </property>
     <property name="value">
-     <number>1</number>
+     <number>30</number>
     </property>
    </widget>
    <widget class="QLabel" name="diametr">
     <property name="geometry">
      <rect>
-      <x>720</x>
-      <y>360</y>
+      <x>530</x>
+      <y>390</y>
       <width>161</width>
       <height>16</height>
      </rect>
@@ -384,8 +384,8 @@
    <widget class="QLabel" name="angle_step">
     <property name="geometry">
      <rect>
-      <x>720</x>
-      <y>390</y>
+      <x>530</x>
+      <y>420</y>
       <width>171</width>
       <height>16</height>
      </rect>
@@ -403,8 +403,8 @@
    <widget class="Line" name="line_4">
     <property name="geometry">
      <rect>
-      <x>720</x>
-      <y>450</y>
+      <x>530</x>
+      <y>480</y>
       <width>281</width>
       <height>16</height>
      </rect>
@@ -416,8 +416,8 @@
    <widget class="QSpinBox" name="spin_dia">
     <property name="geometry">
      <rect>
-      <x>890</x>
-      <y>360</y>
+      <x>700</x>
+      <y>390</y>
       <width>121</width>
       <height>24</height>
      </rect>
@@ -428,12 +428,15 @@
     <property name="maximum">
      <number>300</number>
     </property>
+    <property name="value">
+     <number>100</number>
+    </property>
    </widget>
    <widget class="QPushButton" name="clean_all">
     <property name="geometry">
      <rect>
-      <x>750</x>
-      <y>460</y>
+      <x>560</x>
+      <y>490</y>
       <width>221</width>
       <height>41</height>
      </rect>
@@ -451,9 +454,9 @@
    <widget class="QLabel" name="diametr_2">
     <property name="geometry">
      <rect>
-      <x>720</x>
-      <y>500</y>
-      <width>271</width>
+      <x>530</x>
+      <y>530</y>
+      <width>181</width>
       <height>16</height>
      </rect>
     </property>
@@ -465,6 +468,44 @@
     </property>
     <property name="text">
      <string>Время выполнения:</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="wu">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>160</y>
+      <width>261</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Courier New</family>
+      <pointsize>18</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Ву</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>720</x>
+      <y>530</y>
+      <width>91</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Courier New</family>
+      <pointsize>18</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string/>
     </property>
    </widget>
   </widget>
