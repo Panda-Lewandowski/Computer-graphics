@@ -26,15 +26,15 @@
       <x>10</x>
       <y>20</y>
       <width>511</width>
-      <height>531</height>
+      <height>511</height>
      </rect>
     </property>
    </widget>
    <widget class="QRadioButton" name="cda">
     <property name="geometry">
      <rect>
-      <x>550</x>
-      <y>10</y>
+      <x>540</x>
+      <y>30</y>
       <width>221</width>
       <height>21</height>
      </rect>
@@ -52,8 +52,8 @@
    <widget class="QRadioButton" name="br_float">
     <property name="geometry">
      <rect>
-      <x>550</x>
-      <y>40</y>
+      <x>540</x>
+      <y>60</y>
       <width>231</width>
       <height>20</height>
      </rect>
@@ -71,8 +71,8 @@
    <widget class="QRadioButton" name="br_int">
     <property name="geometry">
      <rect>
-      <x>550</x>
-      <y>70</y>
+      <x>540</x>
+      <y>90</y>
       <width>201</width>
       <height>20</height>
      </rect>
@@ -90,8 +90,8 @@
    <widget class="QRadioButton" name="br_smooth">
     <property name="geometry">
      <rect>
-      <x>550</x>
-      <y>100</y>
+      <x>540</x>
+      <y>120</y>
       <width>261</width>
       <height>20</height>
      </rect>
@@ -109,8 +109,8 @@
    <widget class="QRadioButton" name="lib">
     <property name="geometry">
      <rect>
-      <x>550</x>
-      <y>130</y>
+      <x>540</x>
+      <y>150</y>
       <width>261</width>
       <height>20</height>
      </rect>
@@ -468,25 +468,6 @@
     </property>
     <property name="text">
      <string>Время выполнения:</string>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="wu">
-    <property name="geometry">
-     <rect>
-      <x>550</x>
-      <y>160</y>
-      <width>261</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Courier New</family>
-      <pointsize>18</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Ву</string>
     </property>
    </widget>
    <widget class="QLabel" name="label">

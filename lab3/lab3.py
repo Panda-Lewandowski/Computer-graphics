@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtGui import QPen, QPainter, QColor, QBrush, QImage, QPixmap, QRgba64
 from PyQt5.QtCore import Qt
-from math import cos, sin, pi, radians, copysign
+from math import cos, sin, pi, radians, copysign, fabs
 import numpy as np
 import time
 
@@ -14,8 +14,8 @@ class Window(QtWidgets.QMainWindow):
         self.mainview.setScene(self.scene)
         self.image = QImage(511, 511, QImage.Format_ARGB32_Premultiplied)
         self.pen = QPen()
-        self.color_line = QColor()
-        self.color_bground = QColor()
+        self.color_line = QColor(Qt.black)
+        self.color_bground = QColor(Qt.white)
         self.draw_line.clicked.connect(lambda: draw_line(self))
         self.clean_all.clicked.connect(lambda : clear_all(self))
         self.btn_bground.clicked.connect(lambda: get_color_bground(self))
@@ -68,8 +68,9 @@ def line_br_float(win, p1, p2):
     if p1 == p2:
         win.image.setPixel(p1[0], p1[1], win.pen.color().rgb())
         return
+
     dx = p2[0] - p1[0]
-    dy = p2[1] - p1[0]
+    dy = p2[1] - p1[1]
     sx = sign(dx)
     sy = sign(dy)
     dx = abs(dx)
@@ -85,10 +86,7 @@ def line_br_float(win, p1, p2):
         dy = temp
         change = True
 
-    try:
-        h = dy / dx
-    except ZeroDivisionError:
-        return
+    h = dy / dx
 
     e = h - 0.5
     i = 1
@@ -115,7 +113,7 @@ def line_br_int(win, p1, p2):
         win.image.setPixel(p1[0], p1[1], win.pen.color().rgb())
         return
     dx = p2[0] - p1[0]
-    dy = p2[1] - p1[0]
+    dy = p2[1] - p1[1]
     sx = sign(dx)
     sy = sign(dy)
     dx = abs(dx)
@@ -158,7 +156,7 @@ def line_br_smooth(win, p1, p2):
 
     win.pen.setColor(win.color_line)
     dx = p2[0] - p1[0]
-    dy = p2[1] - p1[0]
+    dy = p2[1] - p1[1]
     sx = sign(dx)
     sy = sign(dy)
     dx = abs(dx)
@@ -169,7 +167,7 @@ def line_br_smooth(win, p1, p2):
     try:
         h = dy / dx
     except ZeroDivisionError:
-        h = 0.1
+        h = 0
 
 
     isBlack = False
@@ -187,7 +185,8 @@ def line_br_smooth(win, p1, p2):
         dx = dy
         dy = temp
         change = True
-        h = 1 / h
+        if h:
+            h = 1 / h
 
     h *= i_max
     e = i_max/2
@@ -195,7 +194,9 @@ def line_br_smooth(win, p1, p2):
     i = 1
     while i <= dx:
         if not isBlack:
-            win.pen.setColor(win.pen.color().lighter(100 + e))
+            new = win.pen.color()
+            new.lighter(100 + e)
+            win.pen.setColor(new)
             win.image.setPixel(x, y, win.pen.color().rgba())
         else:
             new = QColor()
@@ -216,7 +217,96 @@ def line_br_smooth(win, p1, p2):
 
 
 def line_draw_Wu(win, p1, p2):
-    pass
+    if p1 == p2:
+        win.image.setPixel(p1[0], p1[1], win.pen.color().rgb())
+        return
+
+    xb = p1[0]
+    yb = p1[1]
+    xe = p2[0]
+    ye = p2[1]
+    dx = p2[0] - p1[0]
+    dy = p2[1] - p1[1]
+
+    isBlack = False
+    if win.pen.color() == Qt.black:
+        i_max = 256
+        isBlack = True
+    else:
+        i_max = 100
+
+    change = abs(dx) < abs(dy)
+
+    if change:
+        xb, yb, xe, ye, dx, dy = yb, xb, ye, xe, dy, dx
+
+    if xe < xb:
+        xb, xe, yb, ye = xe, xb, ye, yb
+
+    grad = 0
+    if dy != 0:
+        grad = dy / dx
+
+    y = yb
+    x = xb
+
+    while x <= xe:
+        if change:
+            s = sign(y)
+            if not isBlack:
+                new = win.pen.color()
+                new.lighter(100  + i_max * (fabs(y - int(y))))
+                win.pen.setColor(new)
+                win.image.setPixel(y, x, win.pen.color().rgba())
+            else:
+                new = QColor()
+                new.setRgb(0, 0, 0, alpha=i_max - i_max * (fabs(y - int(y))))
+                win.pen.setColor(new)
+                win.image.setPixel(y, x, win.pen.color().rgba())
+
+            if dy and dx:
+                if not isBlack:
+                    new = win.pen.color()
+                    new.lighter(100 + i_max - i_max * (fabs(y - int(y))))
+                    win.pen.setColor(new)
+                    win.image.setPixel(y, x, win.pen.color().rgba())
+                else:
+                    new = QColor()
+                    new.setRgb(0, 0, 0, alpha=i_max * (fabs(y - int(y))))
+                    win.pen.setColor(new)
+                    win.image.setPixel(y, x, win.pen.color().rgba())
+            win.image.setPixel(y+s, x, win.pen.color().rgba())
+
+        else:
+            s = sign(y)
+            if not isBlack:
+                new = win.pen.color()
+                new.lighter(100 + i_max * (fabs(y - int(y))))
+                win.pen.setColor(new)
+                win.image.setPixel(x, y, win.pen.color().rgba())
+            else:
+                new = QColor()
+                new.setRgb(0, 0, 0, alpha=i_max - i_max * (fabs(y - int(y))))
+                win.pen.setColor(new)
+                win.image.setPixel(x, y, win.pen.color().rgba())
+
+            if dy and dx:
+                if not isBlack:
+                    new = win.pen.color()
+                    new.lighter(100 + i_max - i_max * (fabs(y - int(y))))
+                    win.pen.setColor(new)
+                    win.image.setPixel(x, y, win.pen.color().rgba())
+                else:
+                    new = QColor()
+                    new.setRgb(0, 0, 0, alpha=i_max * (fabs(y - int(y))))
+                    win.pen.setColor(new)
+                    win.image.setPixel(x, y, win.pen.color().rgba())
+            win.image.setPixel(x, y + s, win.pen.color().rgba())
+        y += grad
+
+        x += 1
+
+
 
 
 def draw_line(win):
