@@ -29,6 +29,7 @@ class Window(QtWidgets.QMainWindow):
         self.canon.setChecked(True)
         #self.circle.toggled.connect(lambda : change_text(self))
 
+
 def sign(x):
     if x > 0:
         return 1
@@ -59,49 +60,50 @@ def circle_param(win, cx, cy, r):
 
 
 def circle_brez(win, cx, cy, r):
-    x = 0
+    x = 0   # задание начальных значений
     y = r
-    d = 2 - 2 * r
-    b = 0
+    d = 2 - 2 * r   # значение D(x,y)  при (0,R)
     while y >= 0:
+        # высвечивание текущего пиксела
         win.image.setPixel(cx + x, cy + y, win.pen.color().rgb())
         win.image.setPixel(cx + x, cy - y, win.pen.color().rgb())
         win.image.setPixel(cx - x, cy + y, win.pen.color().rgb())
         win.image.setPixel(cx - x, cy - y, win.pen.color().rgb())
-        if d < 0:  # пиксель лежит вне окружности
-            b = 2 * d + 2 * y - 1
+
+        if d < 0:  # пиксель лежит внутри окружности
+            buf = 2 * d + 2 * y - 1
             x += 1
 
-            if b <= 0:
+            if buf <= 0:  # горизонтальный шаг
                 d = d + 2 * x + 1
-            else:
+            else:  # диагональный шаг
                 y -= 1
                 d = d + 2 * x - 2 * y + 2
 
             continue
 
-        if d > 0:  # пиксель лежит внутри окружности
-            b = 2 * d - 2 * x - 1
+        if d > 0:  # пиксель лежит вне окружности
+            buf = 2 * d - 2 * x - 1
             y -= 1
 
-            if b > 0:
+            if buf > 0:  # вертикальный шаг
                 d = d - 2 * y + 1
-            else:
+            else:  # диагональный шаг
                 x += 1
                 d = d + 2 * x - 2 * y + 2
 
             continue
 
-        if d == 0.0: # пиксель лежит на окружности
-            x += 1
+        if d == 0.0:  # пиксель лежит на окружности
+            x += 1   # диагональный шаг
             y -= 1
             d = d + 2 * x - 2 * y + 2
 
 
 def circle_middle(win, cx, cy, r):
-    x = 0
+    x = 0  # начальные значения
     y = r
-    p = 5 / 4 - r
+    p = 5 / 4 - r  # (x + 1)^2 + (y - 1/2)^2 - r^2
     while True:
         win.image.setPixel(cx - x, cy + y, win.pen.color().rgb())
         win.image.setPixel(cx + x, cy - y, win.pen.color().rgb())
@@ -115,9 +117,9 @@ def circle_middle(win, cx, cy, r):
 
         x += 1
 
-        if p < 0:
+        if p < 0:  # средняя точка внутри окружности, ближе верхний пиксел, горизонтальный шаг
             p += 2 * x + 1
-        else:
+        else:   # средняя точка вне окружности, ближе диагональный пиксел, диагональный шаг
             p += 2 * x - 2 * y + 5
             y -= 1
 
@@ -147,50 +149,50 @@ def ellips_param(win, cx, cy, a, b):
 
 
 def ellips_brez(win, cx, cy, a, b):
-    x = 0
+    x = 0  # начальные значения
     y = b
     a = a ** 2
-    d = int(b ** 2 / 2 - a * b / 2 + a / 2 + 0.5)
+    d = int(b * b / 2 - a * b * 2 + a / 2 + 0.5)
     b = b ** 2
     while y >= 0:
         win.image.setPixel(cx + x, cy + y, win.pen.color().rgb())
         win.image.setPixel(cx + x, cy - y, win.pen.color().rgb())
         win.image.setPixel(cx - x, cy + y, win.pen.color().rgb())
         win.image.setPixel(cx - x, cy - y, win.pen.color().rgb())
-        if d < 0:  # пиксель лежит вне окружности
-            beta = 2 * d + 2 * a * y - a
+        if d < 0:  # пиксель лежит внутри эллипса
+            buf = 2 * d + 2 * a * y - a
             x += 1
-            if beta <= 0:
+            if buf <= 0:  # горизотальный шаг
                 d = d + 2 * b * x + b
-            else:
+            else:  # диагональный шаг
                 y -= 1
                 d = d + 2 * b * x - 2 * a * y + a + b
 
             continue
 
-        if d > 0:  # пиксель лежит внутри окружности
-            beta = 2 * d - 2 * b * x - b
+        if d > 0:  # пиксель лежит вне эллипса
+            buf = 2 * d - 2 * b * x - b
             y -= 1
 
-            if beta > 0:
+            if buf > 0:  # вертикальный шаг
                 d = d - 2 * y * a + a
-            else:
+            else:  # диагональный шаг
                 x += 1
                 d = d + 2 * x * b - 2 * y * a + a + b
 
             continue
 
         if d == 0.0:  # пиксель лежит на окружности
-            x += 1
+            x += 1  # диагональный шаг
             y -= 1
             d = d + 2 * x * b - 2 * y * a + a + b
 
 
 def ellips_middle(win, cx, cy, a, b):
-    x = 0
+    x = 0   # начальные положения
     y = b
-    p = b * b - a * a * b + 0.25 * a * a
-    while 2 * (b ** 2) * x < 2 * a * a * y:
+    p = b * b - a * a * b + 0.25 * a * a   # начальное значение параметра принятия решения в области tg<1
+    while 2 * (b ** 2) * x < 2 * a * a * y:  # пока тангенс угла наклона меньше 1
         win.image.setPixel(cx - x, cy + y, win.pen.color().rgb())
         win.image.setPixel(cx + x, cy - y, win.pen.color().rgb())
         win.image.setPixel(cx - x, cy - y, win.pen.color().rgb())
@@ -198,13 +200,14 @@ def ellips_middle(win, cx, cy, a, b):
 
         x += 1
 
-        if p < 0:
+        if p < 0:  # средняя точка внутри эллипса, ближе верхний пиксел, горизонтальный шаг
             p += 2 * b * b * x + b * b
-        else:
+        else:   # средняя точка вне эллипса, ближе диагональный пиксел, диагональный шаг
             y -= 1
             p += 2 * b * b * x - 2 * a * a * y + b * b
 
     p = b * b * (x + 0.5) * (x + 0.5) + a * a * (y - 1) * (y - 1) - a * a * b * b
+    # начальное значение параметра принятия решения в области tg>1 в точке (х + 0.5, y - 1) полседнего положения
 
     while y >= 0:
         win.image.setPixel(cx - x, cy + y, win.pen.color().rgb())
