@@ -2,8 +2,6 @@ from PyQt5 import QtWidgets, uic
 from PyQt5.QtGui import QPen, QPainter, QColor, QBrush, QImage, QPixmap, QRgba64
 from PyQt5.QtCore import Qt
 from math import sqrt, pi, cos, sin
-import numpy as np
-import time
 
 
 class Window(QtWidgets.QMainWindow):
@@ -41,7 +39,15 @@ def sign(x):
 
 def circle_canon(win, cx, cy, r):
     for x in range(0, r + 1, 1):
-        y = int(sqrt(r ** 2 - x ** 2) + 0.5)
+        y = round(sqrt(r ** 2 - x ** 2))
+        win.image.setPixel(cx + x, cy + y, win.pen.color().rgb())
+        win.image.setPixel(cx + x, cy - y, win.pen.color().rgb())
+        win.image.setPixel(cx - x, cy + y, win.pen.color().rgb())
+        win.image.setPixel(cx - x, cy - y, win.pen.color().rgb())
+
+    for y in range(0, r + 1, 1):
+        x = round(sqrt(r ** 2 - y ** 2))
+
         win.image.setPixel(cx + x, cy + y, win.pen.color().rgb())
         win.image.setPixel(cx + x, cy - y, win.pen.color().rgb())
         win.image.setPixel(cx - x, cy + y, win.pen.color().rgb())
@@ -49,10 +55,10 @@ def circle_canon(win, cx, cy, r):
 
 
 def circle_param(win, cx, cy, r):
-    l = int(pi * r / 2 + 0.5)  # длина четврети окружности
+    l = round(pi * r / 2 )  # длина четврети окружности
     for i in range(0, l + 1, 1):
-        x = int(r * cos(i / r) + 0.5)
-        y = int(r * sin(i / r) + 0.5)
+        x = round(r * cos(i / r))
+        y = round(r * sin(i / r))
         win.image.setPixel(cx + x, cy + y, win.pen.color().rgb())
         win.image.setPixel(cx + x, cy - y, win.pen.color().rgb())
         win.image.setPixel(cx - x, cy + y, win.pen.color().rgb())
@@ -129,19 +135,28 @@ def circle_middle(win, cx, cy, r):
 
 def ellips_canon(win, cx, cy, a, b):
     for x in range(0, a + 1, 1):
-        y = int(b * sqrt(1.0 - x ** 2 / a / a) + 0.5)
+        y = round(b * sqrt(1.0 - x ** 2 / a / a))
+        win.image.setPixel(cx + x, cy + y, win.pen.color().rgb())
+        win.image.setPixel(cx + x, cy - y, win.pen.color().rgb())
+        win.image.setPixel(cx - x, cy + y, win.pen.color().rgb())
+        win.image.setPixel(cx - x, cy - y, win.pen.color().rgb())
+
+    for y in range(0, b + 1, 1):
+        x = round(a * sqrt(1.0 - y ** 2 / b / b))
         win.image.setPixel(cx + x, cy + y, win.pen.color().rgb())
         win.image.setPixel(cx + x, cy - y, win.pen.color().rgb())
         win.image.setPixel(cx - x, cy + y, win.pen.color().rgb())
         win.image.setPixel(cx - x, cy - y, win.pen.color().rgb())
 
 
+
+
 def ellips_param(win, cx, cy, a, b):
     m = max(a, b)
-    l = int(pi * m / 2 + 0.5)
+    l = round(pi * m / 2)
     for i in range(0, l + 1, 1):
-        x = int(a * cos(i / m) + 0.5)
-        y = int(b * sin(i / m) + 0.5)
+        x = round(a * cos(i / m))
+        y = round(b * sin(i / m))
         win.image.setPixel(cx + x, cy + y, win.pen.color().rgb())
         win.image.setPixel(cx + x, cy - y, win.pen.color().rgb())
         win.image.setPixel(cx - x, cy + y, win.pen.color().rgb())
@@ -152,7 +167,7 @@ def ellips_brez(win, cx, cy, a, b):
     x = 0  # начальные значения
     y = b
     a = a ** 2
-    d = int(b * b / 2 - a * b * 2 + a / 2 + 0.5)
+    d = round(b * b / 2 - a * b * 2 + a / 2)
     b = b ** 2
     while y >= 0:
         win.image.setPixel(cx + x, cy + y, win.pen.color().rgb())
