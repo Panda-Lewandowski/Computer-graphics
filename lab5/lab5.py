@@ -1,8 +1,11 @@
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QTableWidgetItem
-from PyQt5.QtGui import QPen, QColor, QImage, QPixmap
-from PyQt5.QtCore import Qt
-from time import sleep
+from PyQt5.QtGui import QPen, QColor, QImage, QPixmap, QPainter
+from PyQt5.QtCore import Qt, QTime, QCoreApplication, QEventLoop
+import time
+
+col_one = Qt.black
+col_zero = Qt.white
 
 
 class Window(QtWidgets.QMainWindow):
@@ -12,17 +15,16 @@ class Window(QtWidgets.QMainWindow):
         self.scene = myScene(0, 0, 561, 581)
         self.scene.win = self
         self.view.setScene(self.scene)
-        self.image = QImage(561, 581, QImage.Format_Mono)
-        self.image.fill(Qt.color0)
-
-        self.addrow.clicked.connect(lambda: add_row(self))
+        self.image = QImage(561, 581, QImage.Format_ARGB32_Premultiplied)
+        self.image.fill(col_zero)
         self.lock.clicked.connect(lambda: lock(self))
         self.erase.clicked.connect(lambda: clean_all(self))
         self.paint.clicked.connect(lambda: fill_xor(self))
         self.edges = []
         self.point_now = None
         self.point_lock = None
-        self.pen = QPen(Qt.color1)
+        self.pen = QPen(col_one)
+        self.delay.setChecked(False)
 
 
 class myScene(QtWidgets.QGraphicsScene):
@@ -71,23 +73,54 @@ def lock(win):
 def clean_all(win):
     win.scene.clear()
     win.table.clear()
+    win.edges = []
+    win.point_now = None
+    win.point_lock = None
+    win.image.fill(col_zero)
     r = win.table.rowCount()
-    for i in range(r):
-        win.table.removeRow(i) # TODO
+    for i in range(r, -1, -1):
+        win.table.removeRow(i)
 
 
-def read_table(win):
-    r = win.table.rowCount()
-    for i in range(r):
-        item_x = win.table.item(i, 0)
-    for i in range(r):
-        item_y = win.table.item(i, 1)
+def draw_edges(image, edges, p):
+    p.begin(image)
+    p.setPen(QPen(Qt.blue))
+    for ed in edges:
+        p.drawLine(ed[0], ed[1], ed[2], ed[3])
+    p.end()
+
+
+def delay():
+
+    """# QCoreApplication().processEvents(QEventLoop.AllEvents, 100)
+    QtWidgets.QApplication.processEvents()
+    time.sleep(.005)"""
+
+    t = QTime.currentTime().addMSecs(30)
+    while QTime.currentTime() < t:
+        QCoreApplication.processEvents(QEventLoop.AllEvents, 100)
+
+
+def find_max_y(ed):
+    x_max = None
+    for i in range(len(ed)):
+        if x_max is None or ed[i][0] > x_max:
+            x_max = ed[i][0]
+
+        if x_max is None or ed[i][2] > x_max:
+            x_max = ed[i][2]
+
+    return x_max
 
 
 def fill_xor(win):
     pix = QPixmap()
+    p = QPainter()
+    # TODO draw_edges(win.image, win.edges, p)
 
+    xm = int(find_max_y(win.edges))
     for ed in win.edges:
+        p.begin(win.image)
         # если горизонтальное ребро - дальше
         if ed[1] == ed[3]:
             continue
@@ -99,30 +132,32 @@ def fill_xor(win):
             start_y = int(ed[3])
             end_y = int(ed[1])
 
-        for y in range(start_y, end_y + 1, -1):  # сканирующая строка
+        for y in range(start_y, end_y, -1):  # сканирующая строка
             # определяем пересечение
-            inter = abs(((ed[2] - ed[0])*(y - ed[1])) / (ed[3] - ed[1]))
-            print(ed, inter)
-            """for x in range(win.image.width()):
-                c1 = QColor(win.image.pixel(x + 1, y))
-                c2 = QColor(win.image.pixel(x, y))
-                if c1 == Qt.color1:
-                    c1 = 1
-                else:
-                    c1 = 0
-                if c2 == Qt.color0:
-                    c2 = 0
-                else:
-                    c2 = 1
+            # inter = round(((ed[2] - ed[0])*(y - ed[1])) / (ed[3] - ed[1]))
 
-                print(c1^c2)
-                win.image.setPixel(x + 1, y, Qt.color1)
-                #win.scene.addLine(x+1, y, x+2, y, Qt.color1)"""
-    pix.convertFromImage(win.image)
-    win.scene.addPixmap(pix)
+            x_s = round(ed[0] + (y - ed[1]) * (ed[2] - ed[0]) / (ed[3] - ed[1]))  # TODO
 
-def delay():
-    sleep(0.5)
+            for x in range(x_s, xm + 1):
+                col = QColor(win.image.pixel(x, y))
+                if col == col_zero:
+                    p.setPen(QPen(col_one))
+                else:
+                    p.setPen(QPen(col_zero))
+                p.drawPoint(x, y)
+
+            if win.delay.isChecked():
+                delay()
+                pix.convertFromImage(win.image)
+                win.scene.addPixmap(pix)
+        if not win.delay.isChecked():
+            pix.convertFromImage(win.image)
+            win.scene.addPixmap(pix)
+        p.end()
+
+
+
+
 
 
 if __name__ == "__main__":
