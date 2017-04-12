@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QTableWidgetItem
 from PyQt5.QtGui import QPen, QColor, QImage, QPixmap, QPainter
-from PyQt5.QtCore import Qt, QTime, QCoreApplication, QEventLoop
+from PyQt5.QtCore import Qt, QTime, QCoreApplication, QEventLoop, QPoint
 import time
 
 col_one = Qt.black
@@ -20,6 +20,7 @@ class Window(QtWidgets.QMainWindow):
         self.lock.clicked.connect(lambda: lock(self))
         self.erase.clicked.connect(lambda: clean_all(self))
         self.paint.clicked.connect(lambda: fill_xor(self))
+        self.addpoint.clicked.connect(lambda: add_point_by_btn(self))
         self.edges = []
         self.point_now = None
         self.point_lock = None
@@ -82,23 +83,23 @@ def clean_all(win):
         win.table.removeRow(i)
 
 
-def draw_edges(image, edges, p):
+def draw_edges(image, edges):
+    p = QPainter()
     p.begin(image)
-    p.setPen(QPen(Qt.blue))
+    p.setPen(QPen(col_one))
     for ed in edges:
         p.drawLine(ed[0], ed[1], ed[2], ed[3])
     p.end()
 
 
 def delay():
+    #QCoreApplication.processEvents(QEventLoop.AllEvents, 1)
+    QtWidgets.QApplication.processEvents(QEventLoop.AllEvents, 1)
+    #time.sleep(.005)
 
-    """# QCoreApplication().processEvents(QEventLoop.AllEvents, 100)
-    QtWidgets.QApplication.processEvents()
-    time.sleep(.005)"""
-
-    t = QTime.currentTime().addMSecs(30)
+    """t = QTime.currentTime().addMSecs(1)
     while QTime.currentTime() < t:
-        QCoreApplication.processEvents(QEventLoop.AllEvents, 100)
+        QCoreApplication.processEvents(QEventLoop.AllEvents, 1)"""
 
 
 def find_max_y(ed):
@@ -116,7 +117,7 @@ def find_max_y(ed):
 def fill_xor(win):
     pix = QPixmap()
     p = QPainter()
-    # TODO draw_edges(win.image, win.edges, p)
+
 
     xm = int(find_max_y(win.edges))
     for ed in win.edges:
@@ -126,39 +127,53 @@ def fill_xor(win):
             continue
         # иначе определяем границы сканирования
         if ed[1] > ed[3]:
-            start_y = int(ed[1])
-            end_y = int(ed[3])
-        else:
-            start_y = int(ed[3])
-            end_y = int(ed[1])
+            tmp = ed[1]
+            ed[1] = ed[3]
+            ed[3] = tmp
 
-        for y in range(start_y, end_y, -1):  # сканирующая строка
+            tmp = ed[0]
+            ed[0] = ed[2]
+            ed[2] = tmp
+
+        y = ed[1]
+        end_y = ed[3]
+        dx = (ed[2] - ed[0]) / (ed[3] - ed[1])
+        start_x = ed[0]
+
+        while y < end_y:
             # определяем пересечение
-            # inter = round(((ed[2] - ed[0])*(y - ed[1])) / (ed[3] - ed[1]))
 
-            x_s = round(ed[0] + (y - ed[1]) * (ed[2] - ed[0]) / (ed[3] - ed[1]))  # TODO
-
-            for x in range(x_s, xm + 1):
+            x = start_x
+            while x < xm:
                 col = QColor(win.image.pixel(x, y))
                 if col == col_zero:
                     p.setPen(QPen(col_one))
                 else:
                     p.setPen(QPen(col_zero))
                 p.drawPoint(x, y)
+                x += 1
+
+            start_x += dx
+            y += 1
 
             if win.delay.isChecked():
                 delay()
                 pix.convertFromImage(win.image)
                 win.scene.addPixmap(pix)
+
         if not win.delay.isChecked():
             pix.convertFromImage(win.image)
             win.scene.addPixmap(pix)
         p.end()
+    draw_edges(win.image, win.edges)
 
-
-
-
-
+def add_point_by_btn(win):
+    x = win.x.value()
+    y = win.y.value()
+    p = QPoint()
+    p.setX(x)
+    p.setY(y)
+    add_point(p)
 
 if __name__ == "__main__":
     import sys
