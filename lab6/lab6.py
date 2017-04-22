@@ -7,6 +7,7 @@ import time
 col_one = QColor(0, 0, 0)
 col_zero = QColor(255, 255, 255)
 point_zat = False
+circle = False
 
 class Window(QtWidgets.QMainWindow):
     def __init__(self):
@@ -21,7 +22,8 @@ class Window(QtWidgets.QMainWindow):
         self.erase.clicked.connect(lambda: clean_all(self))
         self.paint.clicked.connect(lambda: fill_with_seed(self))
         self.addpoint.clicked.connect(lambda: add_point_by_btn(self))
-        self.pixel.clicked.connect(set_flag)
+        self.pixel.clicked.connect(lambda: set_flag_zat(self))
+        self.addcircle.clicked.connect(lambda: set_flag_cir(self))
         self.edges = []
         self.point_now = None
         self.point_lock = None
@@ -32,16 +34,32 @@ class Window(QtWidgets.QMainWindow):
 
 class myScene(QtWidgets.QGraphicsScene):
     def mousePressEvent(self, event):
-        if point_zat:
+        if point_zat or circle:
             get_pixel(event.scenePos())
         else:
             add_point(event.scenePos())
 
 
-def set_flag():
+def set_flag_zat(win):
     global point_zat
     point_zat = True
+    win.lock.setDisabled(True)
+    win.erase.setDisabled(True)
+    win.paint.setDisabled(True)
+    win.addpoint.setDisabled(True)
+    win.addpoint.setDisabled(True)
+    win.addcircle.setDisabled(True)
 
+
+def set_flag_cir(win):
+    global circle
+    circle = True
+    win.lock.setDisabled(True)
+    win.erase.setDisabled(True)
+    win.paint.setDisabled(True)
+    win.addpoint.setDisabled(True)
+    win.addpoint.setDisabled(True)
+    win.pixel.setDisabled(True)
 
 
 def add_row(win):
@@ -98,9 +116,17 @@ def clean_all(win):
 def draw_edges(image, edges):
     p = QPainter()
     p.begin(image)
-    p.setPen(QPen(col_one))
+    p.setPen(QPen(QColor(0, 0, 255)))
     for ed in edges:
         p.drawLine(ed[0], ed[1], ed[2], ed[3])
+    p.end()
+
+
+def draw_circle(image, rad, point):
+    p = QPainter()
+    p.begin(image)
+    p.setPen(QPen(QColor(0, 0, 255)))
+    p.drawEllipse(point.x() - rad, point.y() - rad, rad * 2, rad * 2)
     p.end()
 
 
@@ -124,14 +150,31 @@ def add_point_by_btn(win):
 
 
 def get_pixel(point):
-    global w
-    w.p_x.setValue(point.x())
-    w.p_y.setValue(point.y())
+    global w, point_zat, circle
+    pix = QPixmap()
+    if circle:
+        r = w.rad.value()
+        draw_circle(w.image, r, point)
+        circle = False
+    if point_zat:
+        w.p_x.setValue(point.x())
+        w.p_y.setValue(point.y())
+        draw_edges(w.image, w.edges)
+        point_zat = False
+    pix.convertFromImage(w.image)
+    w.scene.addPixmap(pix)
+    w.lock.setDisabled(False)
+    w.erase.setDisabled(False)
+    w.paint.setDisabled(False)
+    w.addpoint.setDisabled(False)
+    w.addcircle.setDisabled(False)
+    w.pixel.setDisabled(False)
 
 
 def fill_with_seed(win):
+
     pix = QPixmap()
-    draw_edges(win.image, win.edges)
+
     p = QPainter()
     p.begin(win.image)
     p.setPen(QPen(col_one))
@@ -141,7 +184,6 @@ def fill_with_seed(win):
     stack.append(z)
     # пока стек не пуст
     while stack:
-        print(stack)
         # извлечение пикселя (х,у) из стека
         seed = stack.pop()
         # цвет(х,у) = цвет закраски
@@ -155,7 +197,7 @@ def fill_with_seed(win):
         x -= 1
         # цвет(х,у) != цвету границы
         col = win.image.pixelColor(x, y)
-        while col.getRgb() != (0, 0, 0, 255) and abs(x) < 561:
+        while col.getRgb() != (0, 0, 0, 255) and col.getRgb() != (0, 0, 255, 255) and abs(x) < 561:
             p.drawPoint(x, y)
             x -= 1
             col = win.image.pixelColor(x, y)
@@ -168,7 +210,7 @@ def fill_with_seed(win):
         x += 1
         # цвет(х,у) != цвету границы
         col = win.image.pixelColor(x, y)
-        while col.getRgb() != (0, 0, 0, 255) and abs(x) < 581:
+        while col.getRgb() != (0, 0, 0, 255) and col.getRgb() != (0, 0, 255, 255) and abs(x) < 581:
             p.drawPoint(x, y)
             x += 1
             col = win.image.pixelColor(x, y)
@@ -181,7 +223,7 @@ def fill_with_seed(win):
         y = y + 1
         fill_line(win, stack, xRight, x, y)
         # ищем затравку на строке ниже
-        y = y - 1
+        y = y - 2
         fill_line(win, stack, xRight, x, y)
 
         if win.delay.isChecked():
@@ -203,7 +245,7 @@ def fill_line(win, stack, xRight, x, y):
         flag = 0
 
         col = win.image.pixelColor(x, y)
-        while col.getRgb() != (0, 0, 0, 255) and x < xRight:
+        while col.getRgb() != (0, 0, 0, 255) and col.getRgb() != (0, 0, 255, 255) and x < xRight:
             if flag == 0:
                 flag = 1
             x += 1
@@ -211,13 +253,11 @@ def fill_line(win, stack, xRight, x, y):
 
         if flag:
             col = win.image.pixelColor(x, y)
-            if x == xRight and col.getRgb() != (0, 0, 0, 255):
-                print(1)
+            if x == xRight and col.getRgb() != (0, 0, 0, 255) and col.getRgb() != (0, 0, 255, 255):
                 new.setX(x)
                 new.setY(y)
                 stack.append(new)
             else:
-                print(2)
                 new.setX(x - 1)
                 new.setY(y)
                 stack.append(new)
@@ -230,6 +270,7 @@ def fill_line(win, stack, xRight, x, y):
 
         if x == tmp:
             x += 1
+
 
 
 if __name__ == "__main__":
