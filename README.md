@@ -25,6 +25,8 @@
 <li> in lab 4: в канонических алгоритмах некоторые пиксели закрашиваются несколько раз(неверный цикл)
 </ul>
 
+#### Run `pip3 install -r requirements.txt` to install all dependencies at once.
+
 #### <i>Legend:</i>
 <ul>
 <li>✅ - ОК
