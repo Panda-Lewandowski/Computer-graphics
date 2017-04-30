@@ -164,6 +164,7 @@ def is_visible(bar, rect):
 def cohen_sutherland(bar, rect, win):
     # инициализация флага
     flag = 1
+    t = 1
 
     # проверка вертикальности и горизонтальности отрезка
     if bar[1][0] - bar[0][0] == 0:
@@ -183,6 +184,27 @@ def cohen_sutherland(bar, rect, win):
             return
         elif not vis:
             return
+
+        # проверка пересечения отрезка и стороны окна
+        code1 = get_code(bar[0], rect)
+        code2 = get_code(bar[1], rect)
+        if code1[3 - i] == code2[3 - i]:
+            continue
+
+        # проверка нахождения Р1 вне окна; если Р1 внутри окна, то Р2 и Р1 поменять местами
+        if not code1[3 - i]:
+            bar[0], bar[1] = bar[1], bar[0]
+
+        # поиск пересечений отрезка со сторонами окна
+        # контроль вертикальности отрезка
+        if flag != -1 and i <= 2:
+            bar[0][1] = t * (rect[i] - bar[0][0]) + bar[0][1]
+            bar[0][0] = rect[i]
+        else:
+            if flag != 0:
+                if flag != -1:
+                    bar[0][0] = (1 / t) * (rect[i] - bar[0][1]) + bar[0][0]
+                bar[0][1] = rect[i]
 
 
 if __name__ == "__main__":
