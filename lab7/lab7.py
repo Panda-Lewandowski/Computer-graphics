@@ -53,11 +53,13 @@ def set_bars(win):
         win.rect.setDisabled(False)
         win.erase.setDisabled(False)
         win.paint.setDisabled(False)
+        win.ect.setDisabled(False)
     else:
         win.input_bars = True
         win.rect.setDisabled(True)
         win.erase.setDisabled(True)
         win.paint.setDisabled(True)
+        win.ect.setDisabled(True)
 
 
 def set_rect(win):
@@ -66,11 +68,13 @@ def set_rect(win):
         win.bars.setDisabled(False)
         win.erase.setDisabled(False)
         win.paint.setDisabled(False)
+        win.ect.setDisabled(False)
     else:
         win.input_rect = True
         win.bars.setDisabled(True)
         win.erase.setDisabled(True)
         win.paint.setDisabled(True)
+        win.ect.setDisabled(True)
 
 
 def add_row(win):
@@ -107,8 +111,57 @@ def clean_all(win):
 
 
 def add_bars(win):
-    if win.clip is None:
+    global now
+    if now is None:
         QMessageBox.warning(win, "Внимание!", "Не введен отсекатель!")
+        return
+    buf = win.scene.itemAt(now, QTransform())
+    if buf is None:
+        QMessageBox.warning(win, "Внимание!", "Не введен отсекатель!")
+    else:
+        buf = buf.rect()
+        win.clip = [buf.left(), buf.right(), buf.top(),  buf.bottom()]
+
+        t = abs(win.clip[2] - win.clip[3]) * 0.8
+        k = abs(win.clip[0] - win.clip[1]) * 0.8
+        # задаем граничные отрезки
+        win.pen.setColor(red)
+        w.lines.append([[win.clip[0], win.clip[2] + t],  [win.clip[0], win.clip[3] - t]])
+        add_row(w)
+        i = w.table.rowCount() - 1
+        item_b = QTableWidgetItem("[{0}, {1}]".format(win.clip[0], win.clip[2] + t))
+        item_e = QTableWidgetItem("[{0}, {1}]".format(win.clip[0], win.clip[3] - t))
+        w.table.setItem(i, 0, item_b)
+        w.table.setItem(i, 1, item_e)
+        win.scene.addLine(win.clip[0], win.clip[2] + t,  win.clip[0], win.clip[3] - t, win.pen)
+
+        w.lines.append([[win.clip[1], win.clip[2] + t],  [win.clip[1], win.clip[3] - t]])
+        add_row(w)
+        i = w.table.rowCount() - 1
+        item_b = QTableWidgetItem("[{0}, {1}]".format(win.clip[1], win.clip[2] + t))
+        item_e = QTableWidgetItem("[{0}, {1}]".format(win.clip[1], win.clip[3] - t))
+        w.table.setItem(i, 0, item_b)
+        w.table.setItem(i, 1, item_e)
+        win.scene.addLine(win.clip[1], win.clip[3] - t,  win.clip[1], win.clip[2] + t, win.pen)
+
+        w.lines.append([[win.clip[0] + k, win.clip[2]], [win.clip[1] - k, win.clip[2]]])
+        add_row(w)
+        i = w.table.rowCount() - 1
+        item_b = QTableWidgetItem("[{0}, {1}]".format(win.clip[0] + k, win.clip[2]))
+        item_e = QTableWidgetItem("[{0}, {1}]".format(win.clip[1] - k, win.clip[2]))
+        w.table.setItem(i, 0, item_b)
+        w.table.setItem(i, 1, item_e)
+        win.scene.addLine(win.clip[0] + k, win.clip[2], win.clip[1] - k, win.clip[2], win.pen)
+
+        w.lines.append([[win.clip[0] + k, win.clip[3]], [win.clip[1] - k, win.clip[3]]])
+        add_row(w)
+        i = w.table.rowCount() - 1
+        item_b = QTableWidgetItem("[{0}, {1}]".format(win.clip[0] + k, win.clip[3]))
+        item_e = QTableWidgetItem("[{0}, {1}]".format(win.clip[1] - k, win.clip[3]))
+        w.table.setItem(i, 0, item_b)
+        w.table.setItem(i, 1, item_e)
+        win.scene.addLine(win.clip[0] + k, win.clip[3], win.clip[1] - k, win.clip[3], win.pen)
+
 
 
 def get_code(a, rect):
