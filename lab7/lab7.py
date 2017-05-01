@@ -191,7 +191,7 @@ def clipping(win):
 def log_prod(code1, code2):
     p = 0
     for i in range(4):
-        p += int((code1[i] + code2[i]) / 2)
+        p += code1[i] & code2[i]
 
     return p
 
@@ -233,17 +233,17 @@ def cohen_sutherland(bar, rect, win):
         if t == 0:
             flag = 0   # горизонтальный
 
+
     # для каждой стороны окна
     for i in range(4):
         vis = is_visible(bar, rect)
-
         if vis == 1:
             win.scene.addLine(bar[0][0], bar[0][1], bar[1][0], bar[1][1], win.pen)
             return
         elif not vis:
             return
 
-        # проверка пересечения отрезка и стороны окна
+        # проверка пересечения отрезка и стороны окнай
         code1 = get_code(bar[0], rect)
         code2 = get_code(bar[1], rect)
         if code1[3 - i] == code2[3 - i]:
