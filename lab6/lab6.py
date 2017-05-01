@@ -187,30 +187,38 @@ def fill_with_seed(win):
     z = QPointF(win.p_x.value(), win.p_y.value())
     stack.append(z)
 
+    # пока стек не пуст
+
     while stack:
+        # извлечение пикселя (х,у) из стека
         p = stack.pop()
         x = p.x()
         y = p.y()
+        # tx = x, запоминаем абсицссу
         xt = p.x()
         Fl = 0
-
+        # цвет(х,у) = цвет закраски
         win.image.setPixel(x, y, fill)
+        # заполняем интервал слева от затравки
         x = x - 1
         while win.image.pixel(x, y) != edge:
             win.image.setPixel(x, y, fill)
             x = x - 1
 
+        # сохраняем крайний слева пиксел
         xl = x + 1
         x = xt
+        # заполняем интервал справа от затравки
         x = x + 1
 
         while win.image.pixel(x, y) != edge:
             win.image.setPixel(x, y, fill)
             x = x + 1
-
+        # сохраняем крайний справа пиксел
         xr = x - 1
         y = y + 1
         x = xl
+        # ищем затравку на строке выше
         while x <= xr:
             Fl = 0
             while win.image.pixel(x, y) != edge and  win.image.pixel(x, y) != fill and  x <= xr:
