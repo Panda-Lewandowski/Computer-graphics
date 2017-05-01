@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QTableWidgetItem
 from PyQt5.QtGui import QPen, QColor, QImage, QPixmap, QPainter
-from PyQt5.QtCore import Qt, QTime, QCoreApplication, QEventLoop, QPoint
+from PyQt5.QtCore import Qt, QTime, QCoreApplication, QEventLoop, QPointF
 import time
 
 col_one = QColor(0, 0, 0)
@@ -175,56 +175,88 @@ def fill_with_seed(win):
 
     pix = QPixmap()
 
-    p = QPainter()
-    p.begin(win.image)
-    p.setPen(QPen(col_one))
+    paint = QPainter()
+    paint.begin(win.image)
+
     stack = []
 
-    z = QPoint(win.p_x.value(), win.p_y.value())
+    edge = QColor(0, 0, 255).rgb()
+    fill = QColor(0, 0, 0).rgb()
+    #paint.setPen(QPen(fill))
+
+    z = QPointF(win.p_x.value(), win.p_y.value())
     stack.append(z)
-    # пока стек не пуст
+
     while stack:
-        # извлечение пикселя (х,у) из стека
-        seed = stack.pop()
-        # цвет(х,у) = цвет закраски
-        p.drawPoint(seed)
-        # tx = x, запоминаем абсицссу
-        tx = seed.x()
-        x = seed.x()
-        y = seed.y()
+        p = stack.pop()
+        x = p.x()
+        y = p.y()
+        xt = p.x()
+        Fl = 0
 
-        # заполняем интервал слева от затравки
-        x -= 1
-        # цвет(х,у) != цвету границы
-        col = win.image.pixelColor(x, y)
-        while col.getRgb() != (0, 0, 0, 255) and col.getRgb() != (0, 0, 255, 255) and abs(x) < 561:
-            p.drawPoint(x, y)
-            x -= 1
-            col = win.image.pixelColor(x, y)
+        win.image.setPixel(x, y, fill)
+        x = x - 1
+        while win.image.pixel(x, y) != edge:
+            win.image.setPixel(x, y, fill)
+            x = x - 1
 
-        # сохраняем крайний слева пиксел
-        xLeft = x + 1
+        xl = x + 1
+        x = xt
+        x = x + 1
 
-        x = tx
-        # заполняем интервал справа от затравки
-        x += 1
-        # цвет(х,у) != цвету границы
-        col = win.image.pixelColor(x, y)
-        while col.getRgb() != (0, 0, 0, 255) and col.getRgb() != (0, 0, 255, 255) and abs(x) < 581:
-            p.drawPoint(x, y)
-            x += 1
-            col = win.image.pixelColor(x, y)
+        while win.image.pixel(x, y) != edge:
+            win.image.setPixel(x, y, fill)
+            x = x + 1
 
-        # сохраняем крайний справа пиксел
-        xRight = x - 1
-
-        x = xLeft
-        # ищем затравку на строке выше
+        xr = x - 1
         y = y + 1
-        fill_line(win, stack, xRight, x, y)
-        # ищем затравку на строке ниже
+        x = xl
+        while x <= xr:
+            Fl = 0
+            while win.image.pixel(x, y) != edge and  win.image.pixel(x, y) != fill and  x <= xr:
+                if Fl == 0:
+                    Fl = 1
+                x = x + 1
+
+            if Fl == 1:
+                if x == xr and win.image.pixel(x, y) != fill and win.image.pixel(x, y) != edge:
+                    stack.append(QPointF(x, y))
+                else:
+                    stack.append(QPointF(x - 1, y))
+                Fl = 0
+
+
+            xt = x
+            while (win.image.pixel(x, y) == edge or win.image.pixel(x, y) == fill) and x < xr:
+                x = x + 1
+
+            if x == xt:
+                x = x + 1
+
         y = y - 2
-        fill_line(win, stack, xRight, x, y)
+        x = xl
+        while x <= xr:
+            Fl = 0
+            while win.image.pixel(x, y) != edge and win.image.pixel(x, y) != fill and x <= xr:
+                if Fl == 0:
+                    Fl = 1
+                x = x + 1
+
+
+            if Fl == 1:
+                if x == xr and win.image.pixel(x, y) != fill and win.image.pixel(x, y) != edge:
+                    stack.append(QPointF(x, y))
+                else:
+                    stack.append(QPointF(x - 1, y))
+                Fl = 0
+
+
+            xt = x
+            while (win.image.pixel(x, y) == edge or win.image.pixel(x, y) == fill) and x < xr:
+                x = x + 1
+
+            if x == xt:
+                x = x + 1
 
         if win.delay.isChecked():
             delay()
@@ -234,43 +266,6 @@ def fill_with_seed(win):
     if not win.delay.isChecked():
         pix.convertFromImage(win.image)
         win.scene.addPixmap(pix)
-
-    p.end()
-
-
-def fill_line(win, stack, xRight, x, y):
-    # создаем новую точку
-    new = QPoint()
-    while x <= xRight:
-        flag = 0
-
-        col = win.image.pixelColor(x, y)
-        while col.getRgb() != (0, 0, 0, 255) and col.getRgb() != (0, 0, 255, 255) and x < xRight:
-            if flag == 0:
-                flag = 1
-            x += 1
-            col = win.image.pixelColor(x, y)
-
-        if flag:
-            col = win.image.pixelColor(x, y)
-            if x == xRight and col.getRgb() != (0, 0, 0, 255) and col.getRgb() != (0, 0, 255, 255):
-                new.setX(x)
-                new.setY(y)
-                stack.append(new)
-            else:
-                new.setX(x - 1)
-                new.setY(y)
-                stack.append(new)
-            flag = 0
-        # продолжим проверку, если интервал был прерван
-        tmp = x
-        col = win.image.pixelColor(x, y)
-        while col.getRgb() == (0, 0, 0, 255) and x < xRight:
-            x += 1
-
-        if x == tmp:
-            x += 1
-
 
 
 if __name__ == "__main__":
