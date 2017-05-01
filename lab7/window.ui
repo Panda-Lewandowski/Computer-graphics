@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Заполнение областей</string>
+   <string>Отсечение прямоугольным отсекателем</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QGraphicsView" name="view">
@@ -70,24 +70,6 @@
      <string>Очистить</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="delay">
-    <property name="geometry">
-     <rect>
-      <x>630</x>
-      <y>500</y>
-      <width>141</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>13</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>С задержкой</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="bars">
     <property name="geometry">
      <rect>
@@ -112,6 +94,19 @@
     </property>
     <property name="text">
      <string>Ввести отсекатель</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="ect">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>500</y>
+      <width>241</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Добавить гор., верт.,на гран.отр.</string>
     </property>
    </widget>
   </widget>

@@ -1,5 +1,5 @@
 from PyQt5 import QtWidgets, uic
-from PyQt5.QtWidgets import QTableWidgetItem
+from PyQt5.QtWidgets import QTableWidgetItem, QMessageBox
 from PyQt5.QtGui import QPen, QColor, QImage, QPixmap, QPainter, QTransform
 from PyQt5.QtCore import Qt, QTime, QCoreApplication, QEventLoop, QPoint
 import time
@@ -21,13 +21,13 @@ class Window(QtWidgets.QMainWindow):
         self.erase.clicked.connect(lambda: clean_all(self))
         self.paint.clicked.connect(lambda: clipping(self))
         self.rect.clicked.connect(lambda: set_rect(self))
+        self.ect.clicked.connect(lambda: add_bars(self))
         self.lines = []
         self.clip = None
         self.point_now = None
         self.input_bars = False
         self.input_rect = False
         self.pen = QPen(red)
-        self.delay.setChecked(False)
 
 
 class Scene(QtWidgets.QGraphicsScene):
@@ -106,6 +106,11 @@ def clean_all(win):
         win.table.removeRow(i)
 
 
+def add_bars(win):
+    if win.clip is None:
+        QMessageBox.warning(win, "Внимание!", "Не введен отсекатель!")
+
+
 def get_code(a, rect):
     code = [0, 0, 0, 0]
     if a[0] < rect[0]:
@@ -164,16 +169,16 @@ def is_visible(bar, rect):
 def cohen_sutherland(bar, rect, win):
     # инициализация флага
     flag = 1
-    t = 1
+    t = 1 # общего положения
 
     # проверка вертикальности и горизонтальности отрезка
     if bar[1][0] - bar[0][0] == 0:
-        flag = -1
+        flag = -1   # вертикальный отрезок
     else:
         # вычисление наклона
         t = (bar[1][1] - bar[0][1]) / (bar[1][0] - bar[0][0])
         if t == 0:
-            flag = 0
+            flag = 0   # горизонтальный
 
     # для каждой стороны окна
     for i in range(4):
@@ -197,7 +202,7 @@ def cohen_sutherland(bar, rect, win):
 
         # поиск пересечений отрезка со сторонами окна
         # контроль вертикальности отрезка
-        if flag != -1 and i <= 2:
+        if flag != -1 and i < 2:
             bar[0][1] = t * (rect[i] - bar[0][0]) + bar[0][1]
             bar[0][0] = rect[i]
         else:
@@ -205,7 +210,7 @@ def cohen_sutherland(bar, rect, win):
                 if flag != -1:
                     bar[0][0] = (1 / t) * (rect[i] - bar[0][1]) + bar[0][0]
                 bar[0][1] = rect[i]
-
+    win.scene.addLine(bar[0][0], bar[0][1], bar[1][0], bar[1][1], win.pen)
 
 if __name__ == "__main__":
     import sys
