@@ -25,12 +25,10 @@ class Window(QtWidgets.QMainWindow):
 
 
 def sign(x):
-    if x > 0:
-        return 1
-    elif x < 0:
-        return -1
-    else:
+    if x == 0:
         return 0
+    else:
+        return x/abs(x)
 
 
 def line_DDA(win, p1, p2):
@@ -50,7 +48,7 @@ def line_DDA(win, p1, p2):
 
     # Вычисляем приращения на каждом шаге по осям абсцисс и ординат double
     dX = (p2[0] - p1[0]) / length
-    dY = (p2[1] - p1[0]) / length
+    dY = (p2[1] - p1[1]) / length
 
     # Начальные значения
     x = p1[0] + 0.5 * sign(dX)
@@ -81,9 +79,7 @@ def line_br_float(win, p1, p2):
     change = False
 
     if dy > dx:
-        temp = dx
-        dx = dy
-        dy = temp
+        dx, dy = dy, dx
         change = True
 
     h = dy / dx
@@ -181,9 +177,7 @@ def line_br_smooth(win, p1, p2):
     change = False
 
     if dy > dx:
-        temp = dx
-        dx = dy
-        dy = temp
+        dx, dy = dy, dx
         change = True
         if h:
             h = 1 / h
