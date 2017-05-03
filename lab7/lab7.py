@@ -163,17 +163,16 @@ def add_bars(win):
         win.scene.addLine(win.clip[0] + k, win.clip[3], win.clip[1] - k, win.clip[3], win.pen)
 
 
-
 def get_code(a, rect):
     code = [0, 0, 0, 0]
     if a[0] < rect[0]:
-        code[3] = 1
-    if a[0] > rect[1]:
-        code[2] = 1
-    if a[1] < rect[2]:
-        code[1] = 1
-    if a[1] > rect[3]:
         code[0] = 1
+    if a[0] > rect[1]:
+        code[1] = 1
+    if a[1] < rect[2]:
+        code[2] = 1
+    if a[1] > rect[3]:
+        code[3] = 1
 
     return code
 
@@ -221,8 +220,8 @@ def is_visible(bar, rect):
 
 def cohen_sutherland(bar, rect, win):
     # инициализация флага
-    flag = 1
-    t = 1 # общего положения
+    flag = 1 # общего положения
+    t = 1
 
     # проверка вертикальности и горизонтальности отрезка
     if bar[1][0] - bar[0][0] == 0:
@@ -233,7 +232,6 @@ def cohen_sutherland(bar, rect, win):
         if t == 0:
             flag = 0   # горизонтальный
 
-
     # для каждой стороны окна
     for i in range(4):
         vis = is_visible(bar, rect)
@@ -243,26 +241,28 @@ def cohen_sutherland(bar, rect, win):
         elif not vis:
             return
 
-        # проверка пересечения отрезка и стороны окнай
+        # проверка пересечения отрезка и стороны окна
         code1 = get_code(bar[0], rect)
         code2 = get_code(bar[1], rect)
-        if code1[3 - i] == code2[3 - i]:
+
+        if code1[i] == code2[i]:
             continue
 
         # проверка нахождения Р1 вне окна; если Р1 внутри окна, то Р2 и Р1 поменять местами
-        if not code1[3 - i]:
+        if not code1[i]:
             bar[0], bar[1] = bar[1], bar[0]
 
         # поиск пересечений отрезка со сторонами окна
         # контроль вертикальности отрезка
-        if flag != -1 and i < 2:
-            bar[0][1] = t * (rect[i] - bar[0][0]) + bar[0][1]
-            bar[0][0] = rect[i]
-        else:
-            if flag != 0:
-                if flag != -1:
-                    bar[0][0] = (1 / t) * (rect[i] - bar[0][1]) + bar[0][0]
-                bar[0][1] = rect[i]
+        if flag != -1:
+            if i < 2:
+                bar[0][1] = t * (rect[i] - bar[0][0]) + bar[0][1]
+                bar[0][0] = rect[i]
+                continue
+            else:
+                bar[0][0] = (1 / t) * (rect[i] - bar[0][1]) + bar[0][0]
+
+        bar[0][1] = rect[i]
     win.scene.addLine(bar[0][0], bar[0][1], bar[1][0], bar[1][1], win.pen)
 
 if __name__ == "__main__":
