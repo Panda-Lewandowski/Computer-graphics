@@ -79,6 +79,25 @@ def lock(win):
     win.point_now_rect = None
 
 
+def clean_all(win):
+    win.scene.clear()
+    win.table_rect.clear()
+    win.table_bars.clear()
+    win.lines = []
+    win.edges = []
+    win.point_now_rect = None
+    win.point_now_bars = None
+    win.point_lock = None
+    win.image.fill(Qt.white)
+    r = win.table_rect.rowCount()
+    for i in range(r, -1, -1):
+        win.table_rect.removeRow(i)
+
+    r = win.table_bars.rowCount()
+    for i in range(r, -1, -1):
+        win.table_bars.removeRow(i)
+
+
 def add_row(win_table):
     win_table.insertRow(win_table.rowCount())
 
