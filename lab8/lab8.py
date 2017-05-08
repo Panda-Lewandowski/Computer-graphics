@@ -40,6 +40,13 @@ class Scene(QtWidgets.QGraphicsScene):
         add_point(event.scenePos())
 
 
+def sign(x):
+    if not x:
+        return 0
+    else:
+        return x / abs(x)
+
+
 def set_bars(win):
     if win.input_bars:
         win.input_bars = False
@@ -74,7 +81,7 @@ def set_rect(win):
 
 
 def lock(win):
-    win.edges.append([win.point_now_rect.x(), win.point_now_rect.y(), win.point_lock.x(), win.point_lock.y()])
+    win.edges.append(win.point_lock)
     win.scene.addLine(win.point_now_rect.x(), win.point_now_rect.y(), win.point_lock.x(), win.point_lock.y(), w.pen)
     win.point_now_rect = None
 
@@ -116,8 +123,7 @@ def add_point(point):
             w.table_rect.setItem(i, 0, item_x)
             w.table_rect.setItem(i, 1, item_y)
         else:
-            w.edges.append([w.point_now_rect.x(), w.point_now_rect.y(),
-                            point.x(), point.y()])
+            w.edges.append(point)
             w.point_now_rect = point
             add_row(w.table_rect)
             i = w.table_rect.rowCount() - 1
@@ -144,6 +150,142 @@ def add_point(point):
             w.table_bars.setItem(i, 1, item_e)
             w.scene.addLine(w.point_now_bars.x(), w.point_now_bars.y(), point.x(), point.y(), w.pen)
             w.point_now_bars = None
+
+
+def clipping(win):
+    norm = isConvex(win.edges)
+    if not norm:
+        QMessageBox.warning(win, "Ошибка!", "Отсекатель не выпуклый!Операция не может быть проведена!")
+
+    for b in win.lines:
+        win.pen.setColor(blue)
+        cyrus_beck(b, win.edges, norm, win.scene, win.pen)
+        win.pen.setColor(red)
+
+
+def isConvex(edges):
+    # проверка выпуклости методом переноса координат
+    flag = 1
+
+    # начальные вершины
+    vo = edges[0]  # iая вершина
+    vi = edges[1]  # i+1 вершина
+    vn = edges[2]  # i+2 вершина и все остальные
+
+    x1 = vi.x() - vo.x()
+    y1 = vi.y() - vo.y()
+
+    x2 = vn.x() - vi.x()
+    y2 = vn.y() - vi.y()
+
+    # определяем знак ординаты
+    r = x1 * y2 - x2 * y1
+    prev = sign(r)
+
+    for i in range(1, len(edges) - 1):
+        vo = edges[i - 1]
+        vi = edges[i]
+        vn = edges[i + 1]
+
+        x1 = vi.x() - vo.x()
+        y1 = vi.y() - vo.y()
+
+        x2 = vn.x() - vi.x()
+        y2 = vn.y() - vi.y()
+
+        r = x1 * y2 - x2 * y1
+        curr = sign(r)
+
+        # если знак предыдущей координаты не совпадает, то возможно многоугольник невыпуклый
+        if curr != prev:
+            flag = 0
+        prev = curr
+
+    # не забываем проверить последнюю с первой вершины
+    vo = edges[len(edges) - 1]
+    vi = edges[0]
+    vn = edges[1]
+
+    x1 = vi.x() - vo.x()
+    y1 = vi.y() - vo.y()
+
+    x2 = vn.x() - vi.x()
+    y2 = vn.y() - vi.y()
+
+    r = x1 * y2 - x2 * y1
+    curr = sign(r)
+    if curr != prev:
+        flag = 0
+    prev = curr
+
+    return flag * curr
+
+
+def scalar(v1, v2):
+    return v1.x() * v2.x() + v1.y() * v2.y()
+
+
+def cyrus_beck(r, edges, n, scene, p):
+    # инициализируем пределы значений параметра, предполагая, что весь отрезок полностью видимый
+    tb = 0
+    te = 1
+    vis = 1
+
+    # вычисляем директрису D
+    D = QPoint()
+    D.setX(r[0][0] - r[1][0])
+    D.setY(r[0][1] - r[1][1])
+
+    # главный цикл
+    for i in range(len(edges) - 1):
+        # вычисляем wi, D * ni, wi * n
+        W = QPoint()
+        W.setX(r[0][0] - edges[i].x())
+        W.setY(r[0][1] - edges[i].y())
+
+        N = QPoint()
+        N.setX(-n * (edges[i + 1].y() - edges[i].y()))
+        N.setY(n * (edges[i + 1].x() - edges[i].x()))
+        Dscalar = scalar(D, N)
+        Wscalar = scalar(W, N)
+
+        if not Dscalar:
+            # отрезок выродился в точку
+            if Wscalar < 0:
+                # видна ли точка относительно текущей границы?
+                vis = 0
+                break
+        else:
+            # отрезок невырожден
+            t = - Wscalar / Dscalar
+            # поиск верхнего и нижнего предела t
+
+            if Dscalar > 0:
+                # поиск нижнего предела
+                # верно ли, что t <= 1
+                if t > 1:
+                    vis = 0
+                    break
+                else:
+                    tb = max(tb, t)
+            else:
+                # поиск верхнего предела
+                # верно ли, что t > 1
+                if t < 1:
+                    vis = 0
+                    break
+                else:
+                    te = min(te, t)
+
+        # проверка фактической видимости отрезка
+        if te < tb:
+            vis = 0
+
+        if vis:
+            scene.addLine(r[0][0] + (r[1][0] - r[0][0]) * te,
+                          r[0][1] + (r[1][1] - r[0][1]) * te,
+                          r[0][0] + (r[1][0] - r[0][0]) * tb,
+                          r[0][1] + (r[1][0] - r[0][1]) * tb, p)
 
 
 if __name__ == "__main__":
