@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QTableWidgetItem, QMessageBox
 from PyQt5.QtGui import QPen, QColor, QImage, QPixmap, QPainter, QTransform
-from PyQt5.QtCore import Qt, QTime, QCoreApplication, QEventLoop, QPoint
+from PyQt5.QtCore import Qt, QTime, QCoreApplication, QEventLoop, QPointF
 import time
 
 red = Qt.red
@@ -160,12 +160,13 @@ def clipping(win):
     for b in win.lines:
         win.pen.setColor(blue)
         cyrus_beck(b, win.edges, norm, win.scene, win.pen)
-        win.pen.setColor(red)
+    win.pen.setColor(red)
 
 
 def isConvex(edges):
     # проверка выпуклости методом переноса координат
     flag = 1
+    n = []
 
     # начальные вершины
     vo = edges[0]  # iая вершина
@@ -182,7 +183,9 @@ def isConvex(edges):
     r = x1 * y2 - x2 * y1
     prev = sign(r)
 
-    for i in range(1, len(edges) - 1):
+    for i in range(2, len(edges) - 1):
+        if not flag:
+            break
         vo = edges[i - 1]
         vi = edges[i]
         vn = edges[i + 1]
@@ -216,7 +219,6 @@ def isConvex(edges):
     curr = sign(r)
     if curr != prev:
         flag = 0
-    prev = curr
 
     return flag * curr
 
@@ -229,31 +231,34 @@ def cyrus_beck(r, edges, n, scene, p):
     # инициализируем пределы значений параметра, предполагая, что весь отрезок полностью видимый
     tb = 0
     te = 1
-    vis = 1
 
     # вычисляем директрису D
-    D = QPoint()
-    D.setX(r[0][0] - r[1][0])
-    D.setY(r[0][1] - r[1][1])
+    D = QPointF()
+    D.setX(r[1][0] - r[0][0])
+    D.setY(r[1][1] - r[0][1])
+    print(D.x(), D.y())
 
     # главный цикл
-    for i in range(len(edges) - 1):
+    for i in range(len(edges)):
         # вычисляем wi, D * ni, wi * n
-        W = QPoint()
+        W = QPointF()
         W.setX(r[0][0] - edges[i].x())
         W.setY(r[0][1] - edges[i].y())
 
-        N = QPoint()
-        N.setX(-n * (edges[i + 1].y() - edges[i].y()))
-        N.setY(n * (edges[i + 1].x() - edges[i].x()))
+        N = QPointF()
+        if i == len(edges) - 1:
+            N.setX(-n * (edges[0].y() - edges[i].y()))
+            N.setY(n * (edges[0].x() - edges[i].x()))
+        else:
+            N.setX(-n * (edges[i + 1].y() - edges[i].y()))
+            N.setY(n * (edges[i + 1].x() - edges[i].x()))
         Dscalar = scalar(D, N)
         Wscalar = scalar(W, N)
 
-        if not Dscalar:
+        if Dscalar == 0:
             # отрезок выродился в точку
             if Wscalar < 0:
                 # видна ли точка относительно текущей границы?
-                vis = 0
                 break
         else:
             # отрезок невырожден
@@ -264,28 +269,23 @@ def cyrus_beck(r, edges, n, scene, p):
                 # поиск нижнего предела
                 # верно ли, что t <= 1
                 if t > 1:
-                    vis = 0
-                    break
+                    return
                 else:
                     tb = max(tb, t)
-            else:
+            elif Dscalar < 0:
                 # поиск верхнего предела
                 # верно ли, что t > 1
-                if t < 1:
-                    vis = 0
-                    break
+                if t < 0:
+                    return
                 else:
                     te = min(te, t)
 
         # проверка фактической видимости отрезка
-        if te < tb:
-            vis = 0
-
-        if vis:
-            scene.addLine(r[0][0] + (r[1][0] - r[0][0]) * te,
-                          r[0][1] + (r[1][1] - r[0][1]) * te,
-                          r[0][0] + (r[1][0] - r[0][0]) * tb,
-                          r[0][1] + (r[1][0] - r[0][1]) * tb, p)
+    if tb <= te:
+        scene.addLine(r[0][0] + (r[1][0] - r[0][0]) * te,
+                      r[0][1] + (r[1][1] - r[0][1]) * te,
+                      r[0][0] + (r[1][0] - r[0][0]) * tb,
+                      r[0][1] + (r[1][1] - r[0][1]) * tb, p)
 
 
 if __name__ == "__main__":
