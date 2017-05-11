@@ -15,6 +15,7 @@
 | Lab 8| 🌀 ||
 | Lab 9|  ||
 | Lab 10|  ||
+| Exam||<a href="https://github.com/Panda-Lewandowski/Computer-graphics/wiki/Exam">wiki</a>|
 
 <ul><li>Python 3.6
 <li><b>Using libs:</b> PyQt, numpy, math, tkinter
