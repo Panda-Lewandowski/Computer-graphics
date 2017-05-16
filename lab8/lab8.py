@@ -164,15 +164,14 @@ def clipping(win):
 
 
 def isConvex(edges):
-    # проверка выпуклости методом переноса координат
     flag = 1
-    n = []
 
     # начальные вершины
     vo = edges[0]  # iая вершина
     vi = edges[1]  # i+1 вершина
     vn = edges[2]  # i+2 вершина и все остальные
 
+    # векторное произведение двух векторов
     x1 = vi.x() - vo.x()
     y1 = vi.y() - vo.y()
 
@@ -190,6 +189,7 @@ def isConvex(edges):
         vi = edges[i]
         vn = edges[i + 1]
 
+        # векторное произведение двух векторов
         x1 = vi.x() - vo.x()
         y1 = vi.y() - vo.y()
 
@@ -209,6 +209,7 @@ def isConvex(edges):
     vi = edges[0]
     vn = edges[1]
 
+    # векторное произведение двух векторов
     x1 = vi.x() - vo.x()
     y1 = vi.y() - vo.y()
 
@@ -229,22 +230,24 @@ def scalar(v1, v2):
 
 def cyrus_beck(r, edges, n, scene, p):
     # инициализируем пределы значений параметра, предполагая, что весь отрезок полностью видимый
+    # максимизируем t нижнее и t верхнее, исходя из того что 0 <= t <= 1
     tb = 0
     te = 1
 
-    # вычисляем директрису D
+    # вычисляем директрису(определяет направление/ориентацию отрезка) D= p1 - p2
     D = QPointF()
     D.setX(r[1][0] - r[0][0])
     D.setY(r[1][1] - r[0][1])
-    print(D.x(), D.y())
 
-    # главный цикл
+    # главный цикл по сторонам отсекателя
     for i in range(len(edges)):
         # вычисляем wi, D * ni, wi * n
+        # весовой множитель удаленности гранничной точки от р1(берем граничную точку равной вершине)
         W = QPointF()
         W.setX(r[0][0] - edges[i].x())
         W.setY(r[0][1] - edges[i].y())
 
+        # определяем нормаль
         N = QPointF()
         if i == len(edges) - 1:
             N.setX(-n * (edges[0].y() - edges[i].y()))
@@ -252,16 +255,17 @@ def cyrus_beck(r, edges, n, scene, p):
         else:
             N.setX(-n * (edges[i + 1].y() - edges[i].y()))
             N.setY(n * (edges[i + 1].x() - edges[i].x()))
+        # определяем скалярные произведения
         Dscalar = scalar(D, N)
         Wscalar = scalar(W, N)
 
         if Dscalar == 0:
-            # отрезок выродился в точку
+            # если отрезок выродился в точку
             if Wscalar < 0:
                 # видна ли точка относительно текущей границы?
                 break
         else:
-            # отрезок невырожден
+            # отрезок невырожден, определяем t
             t = - Wscalar / Dscalar
             # поиск верхнего и нижнего предела t
 
@@ -274,7 +278,7 @@ def cyrus_beck(r, edges, n, scene, p):
                     tb = max(tb, t)
             elif Dscalar < 0:
                 # поиск верхнего предела
-                # верно ли, что t > 1
+                # верно ли, что t >= 0
                 if t < 0:
                     return
                 else:
