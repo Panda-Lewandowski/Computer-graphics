@@ -13,7 +13,7 @@
 | Lab 6| ✅ ||
 | Lab 7| ✅ ||
 | Lab 8| 🌀 ||
-| Lab 9|  ||
+| Lab 9| 🌀 ||
 | Lab 10|  ||
 | Exam||<a href="https://github.com/Panda-Lewandowski/Computer-graphics/wiki/Exam">wiki</a>|
 
