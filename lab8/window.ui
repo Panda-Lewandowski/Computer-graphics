@@ -109,19 +109,6 @@
      <string>Ввести отсекатель</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="ect">
-    <property name="geometry">
-     <rect>
-      <x>570</x>
-      <y>470</y>
-      <width>241</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Добавить гор., верт.,на гран.отр.</string>
-    </property>
-   </widget>
    <widget class="QTableWidget" name="table_bars">
     <property name="geometry">
      <rect>
@@ -141,6 +128,19 @@
       <string>КОНЕЦ</string>
      </property>
     </column>
+   </widget>
+   <widget class="QPushButton" name="ect">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>470</y>
+      <width>231</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Добавить параллельный отрезок</string>
+    </property>
    </widget>
   </widget>
  </widget>

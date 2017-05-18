@@ -2,12 +2,13 @@ from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QTableWidgetItem, QMessageBox
 from PyQt5.QtGui import QPen, QColor, QImage, QPixmap, QPainter, QTransform
 from PyQt5.QtCore import Qt, QTime, QCoreApplication, QEventLoop, QPointF
-import time
+
 
 red = Qt.red
 blue = Qt.blue
 black = Qt.black
 now = None
+
 
 class Window(QtWidgets.QMainWindow):
     def __init__(self):
@@ -84,6 +85,33 @@ def lock(win):
     win.edges.append(win.point_lock)
     win.scene.addLine(win.point_now_rect.x(), win.point_now_rect.y(), win.point_lock.x(), win.point_lock.y(), w.pen)
     win.point_now_rect = None
+
+
+def add_bars(win):
+    if len(win.edges) == 0:
+        QMessageBox.warning(win, "Внимание!", "Не введен отсекатель!")
+        return
+    win.pen.setColor(red)
+    w.lines.append([[win.edges[0].x() - 15, win.edges[0].y() - 15],
+                    [win.edges[1].x() - 15, win.edges[1].y() - 15]])
+    add_row(w.table_bars)
+    i = w.table_bars.rowCount() - 1
+    item_b = QTableWidgetItem("[{0}, {1}]".format(win.edges[0].x() - 15 , win.edges[0].y() - 15))
+    item_e = QTableWidgetItem("[{0}, {1}]".format(win.edges[1].x() - 15, win.edges[1].y() - 15))
+    w.table_bars.setItem(i, 0, item_b)
+    w.table_bars.setItem(i, 1, item_e)
+    w.scene.addLine(win.edges[0].x() - 15, win.edges[0].y() - 15, win.edges[1].x() - 15, win.edges[1].y() - 15, w.pen)
+
+    win.pen.setColor(red)
+    w.lines.append([[win.edges[0].x() + 15, win.edges[0].y() + 15],
+                    [win.edges[1].x() + 15, win.edges[1].y() + 15]])
+    add_row(w.table_bars)
+    i = w.table_bars.rowCount() - 1
+    item_b = QTableWidgetItem("[{0}, {1}]".format(win.edges[0].x() + 15, win.edges[0].y() + 15))
+    item_e = QTableWidgetItem("[{0}, {1}]".format(win.edges[1].x() + 15, win.edges[1].y() + 15))
+    w.table_bars.setItem(i, 0, item_b)
+    w.table_bars.setItem(i, 1, item_e)
+    w.scene.addLine(win.edges[0].x() + 15, win.edges[0].y() + 15, win.edges[1].x() + 15, win.edges[1].y() + 15, w.pen)
 
 
 def clean_all(win):
@@ -260,10 +288,10 @@ def cyrus_beck(r, edges, n, scene, p):
         Wscalar = scalar(W, N)
 
         if Dscalar == 0:
-            # если отрезок выродился в точку
+            # если отрезок параллелен ребру отсекателю
             if Wscalar < 0:
-                # видна ли точка относительно текущей границы?
-                break
+                # виден ли?
+                return
         else:
             # отрезок невырожден, определяем t
             t = - Wscalar / Dscalar
