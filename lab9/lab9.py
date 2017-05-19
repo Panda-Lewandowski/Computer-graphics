@@ -40,6 +40,13 @@ class Scene(QtWidgets.QGraphicsScene):
         add_point(event.scenePos())
 
 
+def sign(x):
+    if not x:
+        return 0
+    else:
+        return x / abs(x)
+
+
 def set_pol(win):
     if win.input_pol:
         win.input_pol = False
@@ -155,6 +162,122 @@ def clean_all(win):
     r = win.table_pol.rowCount()
     for i in range(r, -1, -1):
         win.table_pol.removeRow(i)
+
+
+def isConvex(edges):
+    flag = 1
+
+    # начальные вершины
+    vo = edges[0]  # iая вершина
+    vi = edges[1]  # i+1 вершина
+    vn = edges[2]  # i+2 вершина и все остальные
+
+    # векторное произведение двух векторов
+    x1 = vi.x() - vo.x()
+    y1 = vi.y() - vo.y()
+
+    x2 = vn.x() - vi.x()
+    y2 = vn.y() - vi.y()
+
+    # определяем знак ординаты
+    r = x1 * y2 - x2 * y1
+    prev = sign(r)
+
+    for i in range(2, len(edges) - 1):
+        if not flag:
+            break
+        vo = edges[i - 1]
+        vi = edges[i]
+        vn = edges[i + 1]
+
+        # векторное произведение двух векторов
+        x1 = vi.x() - vo.x()
+        y1 = vi.y() - vo.y()
+
+        x2 = vn.x() - vi.x()
+        y2 = vn.y() - vi.y()
+
+        r = x1 * y2 - x2 * y1
+        curr = sign(r)
+
+        # если знак предыдущей координаты не совпадает, то возможно многоугольник невыпуклый
+        if curr != prev:
+            flag = 0
+        prev = curr
+
+    # не забываем проверить последнюю с первой вершины
+    vo = edges[len(edges) - 1]
+    vi = edges[0]
+    vn = edges[1]
+
+    # векторное произведение двух векторов
+    x1 = vi.x() - vo.x()
+    y1 = vi.y() - vo.y()
+
+    x2 = vn.x() - vi.x()
+    y2 = vn.y() - vi.y()
+
+    r = x1 * y2 - x2 * y1
+    curr = sign(r)
+    if curr != prev:
+        flag = 0
+
+    return flag * curr
+
+
+def clipping(win):
+    if len(win.pol_clip) <= 1:
+        QMessageBox.warning(win, "Ошибка!", "Отсекатель не задан!")
+
+    if len(win.pol_pol) <= 1:
+        QMessageBox.warning(win, "Ошибка!", "Многоугольник не задан!")
+
+    if len(win.pol_pol) > 1 and len(win.pol_clip) > 1:
+        norm = isConvex(win.pol_clip)
+        if not norm:
+            QMessageBox.warning(win, "Ошибка!", "Отсекатель не выпуклый!Операция не может быть проведена!")
+        else:
+            sutherland_hodgman(win.pol_clip, win.pol_pol, norm)
+
+
+def sutherland_hodgman(clip, pol, norm):
+    # дублируем начальную вершину отсекателя в конец
+    clip.append(clip[0])
+    for i in range(len(clip) - 1):
+        new = []
+        s = None
+        for j in range(len(pol)):
+            if j == 0:
+                s = pol[j]
+            else:
+                is_intersection([s, pol[j]], [clip[i], clip[i + 1]])
+
+    print(is_visiable(pol[2], clip[0], clip[1], norm))
+    print(is_visiable(pol[2], clip[1], clip[2], norm))
+    print(is_visiable(pol[2], clip[2], clip[0], norm))
+
+
+def is_intersection(ed1, ed2):
+    pass
+
+
+def is_visiable(point, peak1, peak2, n):
+    W = QPointF()
+    W.setX(point.x() - peak1.x())
+    W.setY(point.y() - peak1.y())
+
+    N = QPointF()
+    N.setX(-n * (peak2.y() - peak1.y()))
+    N.setY(n * (peak2.x() - peak1.x()))
+
+    Wscalar = scalar(W, N)
+    if Wscalar >= 0:
+        return True
+    else:
+        return False
+
+def scalar(v1, v2):
+    return v1.x() * v2.x() + v1.y() * v2.y()
 
 if __name__ == "__main__":
     import sys
