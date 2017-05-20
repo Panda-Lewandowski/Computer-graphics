@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QTableWidgetItem, QMessageBox
-from PyQt5.QtGui import QPen, QColor, QImage, QPixmap, QPainter, QTransform
+from PyQt5.QtGui import QPen, QColor, QImage, QPixmap, QPainter, QTransform, QPolygonF
 from PyQt5.QtCore import Qt, QTime, QCoreApplication, QEventLoop, QPointF
 
 red = Qt.red
@@ -15,8 +15,6 @@ class Window(QtWidgets.QMainWindow):
         self.scene = Scene(0, 0, 561, 581)
         self.scene.win = self
         self.view.setScene(self.scene)
-        self.image = QImage(561, 581, QImage.Format_ARGB32_Premultiplied)
-        self.image.fill(Qt.white)
         self.pol.clicked.connect(lambda : set_pol(self))
         self.erase.clicked.connect(lambda: clean_all(self))
         self.paint.clicked.connect(lambda: clipping(self))
@@ -154,7 +152,6 @@ def clean_all(win):
     win.point_now_pol = None
     win.point_lock_rect = None
     win.point_lock_pol = None
-    win.image.fill(Qt.white)
     r = win.table_rect.rowCount()
     for i in range(r, -1, -1):
         win.table_rect.removeRow(i)
@@ -237,31 +234,76 @@ def clipping(win):
         if not norm:
             QMessageBox.warning(win, "Ошибка!", "Отсекатель не выпуклый!Операция не может быть проведена!")
         else:
-            sutherland_hodgman(win.pol_clip, win.pol_pol, norm)
+            p = sutherland_hodgman(win.pol_clip, win.pol_pol, norm)
+            if p:
+                win.pen.setWidth(2)
+                win.pen.setColor(red)
+                win.scene.addPolygon(p, win.pen)
+                win.pen.setWidth(1)
 
 
 def sutherland_hodgman(clip, pol, norm):
     # дублируем начальную вершину отсекателя в конец
     clip.append(clip[0])
+    new = []
+    s = None
     for i in range(len(clip) - 1):
-        new = []
-        s = None
         for j in range(len(pol)):
             if j == 0:
                 s = pol[j]
             else:
-                is_intersection([s, pol[j]], [clip[i], clip[i + 1]])
+                t = is_intersection([s, pol[j]], [clip[i], clip[i + 1]], norm)
+                if t:
+                    new.append(t)
+                s = pol[j]
 
-    print(is_visiable(pol[2], clip[0], clip[1], norm))
-    print(is_visiable(pol[2], clip[1], clip[2], norm))
-    print(is_visiable(pol[2], clip[2], clip[0], norm))
+                if is_visiable(s,  clip[i], clip[i + 1], norm):
+                    new.append(s)
+
+        t = is_intersection([pol[0], pol[len(pol) - 1]], [clip[i], clip[i + 1]], norm)
+        if t:
+            new.append(t)
+
+    if len(new) == 0:
+        return False
+    else:
+        return QPolygonF(new)
 
 
-def is_intersection(ed1, ed2):
-    pass
+def is_intersection(ed1, ed2, n):
+    if (is_visiable(ed1[0], ed2[0], ed2[1], n) and not is_visiable(ed1[1], ed2[0], ed2[1], n)) or \
+            (not is_visiable(ed1[0], ed2[0], ed2[1], n) and is_visiable(ed1[1], ed2[0], ed2[1], n)):
+        # ищем пересечение
+        a = ed1[0].x()
+        b = ed1[1].x() - ed1[0].x()
+        c = ed2[0].x()
+        d = ed2[1].x() - ed2[0].x()
+
+        e = ed1[0].y()
+        f = ed1[1].y() - ed1[0].y()
+        p = ed2[0].y()
+        m = ed2[1].y() - ed2[0].y()
+
+        t = (d * (e + p) - m * (a + c))/(d * f - b * m)
+
+        if 0 <= t <= 1:
+            I = QPointF()
+            I.setX(ed1[0].x() + (ed1[1].x() - ed1[0].x()) * t)
+            I.setY(ed1[0].y() + (ed1[1].y() - ed1[0].y()) * t)
+            return I
+        else:
+            return False
+
+    else:
+        return False
 
 
 def is_visiable(point, peak1, peak2, n):
+    """if line(peak1, peak2, point) * line(peak1, peak2, peak3) < 0:
+            return False
+        else:
+            return True"""
+
     W = QPointF()
     W.setX(point.x() - peak1.x())
     W.setY(point.y() - peak1.y())
@@ -276,8 +318,19 @@ def is_visiable(point, peak1, peak2, n):
     else:
         return False
 
+
+
+
 def scalar(v1, v2):
     return v1.x() * v2.x() + v1.y() * v2.y()
+
+
+def line(p1, p2, p):
+    if (p1.y() - p2.y()) * p.x() + (p2.x() - p1.x()) * p.y() + (p1.x() * p2.y() - p2.x() * p1.y()) >= 0:
+        return 1
+    else:
+        return -1
+
 
 if __name__ == "__main__":
     import sys
