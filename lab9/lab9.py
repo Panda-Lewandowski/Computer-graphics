@@ -2,6 +2,7 @@ from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QTableWidgetItem, QMessageBox
 from PyQt5.QtGui import QPen, QColor, QImage, QPixmap, QPainter, QTransform, QPolygonF
 from PyQt5.QtCore import Qt, QTime, QCoreApplication, QEventLoop, QPointF
+import copy
 
 red = Qt.red
 blue = Qt.blue
@@ -36,6 +37,13 @@ class Window(QtWidgets.QMainWindow):
 class Scene(QtWidgets.QGraphicsScene):
     def mousePressEvent(self, event):
         add_point(event.scenePos())
+
+    def mouseMoveEvent(self, event):
+        global w
+        x = event.scenePos().x()
+        y = event.scenePos().y()
+        w.x.setText("{0}".format(x))
+        w.y.setText("{0}".format(y))
 
 
 def sign(x):
@@ -245,34 +253,40 @@ def clipping(win):
 def sutherland_hodgman(clip, pol, norm):
     # дублируем начальную вершину отсекателя в конец
     clip.append(clip[0])
-    new = []
+
     s = None
+    f = None
     for i in range(len(clip) - 1):
+        new = []
         for j in range(len(pol)):
             if j == 0:
-                s = pol[j]
+                f = pol[j]
             else:
-                t = is_intersection([s, pol[j]], [clip[i], clip[i + 1]], norm)
+                t = is_intersection([s, pol[j]], [clip[i], clip[i + 1]])
                 if t:
                     new.append(t)
-                s = pol[j]
 
-                if is_visiable(s,  clip[i], clip[i + 1], norm):
+            s = pol[j]
+            if is_visiable(s,  clip[i], clip[i + 1]):
                     new.append(s)
 
-        t = is_intersection([pol[0], pol[len(pol) - 1]], [clip[i], clip[i + 1]], norm)
-        if t:
-            new.append(t)
+        if len(new) != 0:
+            t = is_intersection([s, f], [clip[i], clip[i + 1]])
+            if t:
+                new.append(t)
+            print(new)
+            new.append(new[0])
+            pol = copy.deepcopy(new)
 
-    if len(new) == 0:
+    if len(pol) == 0:
         return False
     else:
-        return QPolygonF(new)
+        return QPolygonF(pol)
 
 
-def is_intersection(ed1, ed2, n):
-    if (is_visiable(ed1[0], ed2[0], ed2[1], n) and not is_visiable(ed1[1], ed2[0], ed2[1], n)) or \
-            (not is_visiable(ed1[0], ed2[0], ed2[1], n) and is_visiable(ed1[1], ed2[0], ed2[1], n)):
+def is_intersection(ed1, ed2):
+    if (is_visiable(ed1[0], ed2[0], ed2[1]) and not is_visiable(ed1[1], ed2[0], ed2[1])) or \
+            (not is_visiable(ed1[0], ed2[0], ed2[1]) and is_visiable(ed1[1], ed2[0], ed2[1])):
         # ищем пересечение
         a = ed1[0].x()
         b = ed1[1].x() - ed1[0].x()
@@ -285,11 +299,13 @@ def is_intersection(ed1, ed2, n):
         m = ed2[1].y() - ed2[0].y()
 
         t = (d * (e + p) - m * (a + c))/(d * f - b * m)
+        #print(t)
 
         if 0 <= t <= 1:
             I = QPointF()
             I.setX(ed1[0].x() + (ed1[1].x() - ed1[0].x()) * t)
             I.setY(ed1[0].y() + (ed1[1].y() - ed1[0].y()) * t)
+            #print(I.x(), I.y())
             return I
         else:
             return False
@@ -298,13 +314,13 @@ def is_intersection(ed1, ed2, n):
         return False
 
 
-def is_visiable(point, peak1, peak2, n):
+def is_visiable(point, peak1, peak2):
     """if line(peak1, peak2, point) * line(peak1, peak2, peak3) < 0:
             return False
         else:
             return True"""
 
-    W = QPointF()
+    """W = QPointF()
     W.setX(point.x() - peak1.x())
     W.setY(point.y() - peak1.y())
 
@@ -316,7 +332,22 @@ def is_visiable(point, peak1, peak2, n):
     if Wscalar >= 0:
         return True
     else:
+        return False"""
+    if vector([peak1, point], [peak1, peak2]) >= 0:
+        return True
+    else:
         return False
+
+
+def vector(v1, v2):
+    x1 = v1[0].x() - v1[1].x()
+    y1 = v1[0].y() - v1[1].y()
+
+    x2 = v2[0].x() - v2[1].x()
+    y2 = v2[0].y() - v1[1].y()
+
+    r = x1 * y2 - x2 * y1
+    return sign(r)
 
 
 
