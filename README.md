@@ -82,6 +82,7 @@
 <li> in lab 4: в канонических алгоритмах некоторые пиксели закрашиваются несколько раз(неверный цикл)
 <li> in lab 3: неудачный цикл в Цда
 <li> exam #2:  дописать вывод формул 
+<li>дописать алг ву
 </ul>
 
 #### Run `pip3 install -r requirements.txt` to install all dependencies at once.
