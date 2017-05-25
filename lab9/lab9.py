@@ -260,7 +260,7 @@ def is_intersection(ed1, ed2, norm):
 
 def is_visiable(point, peak1, peak2, norm):
     v = vector([point, peak1], [peak2, peak1])
-    if norm *  v <= 0:
+    if norm * v < 0:
         return True
     else:
         return False
@@ -323,7 +323,7 @@ def sutherland_hodgman(clip, pol, norm):
             if t:
                 new.append(t)
 
-            pol = copy.deepcopy(new)
+        pol = copy.deepcopy(new)
 
     if len(pol) == 0:
         return False
