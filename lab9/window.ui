@@ -83,7 +83,7 @@
      <string>Очистить</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pol">
+   <widget class="QPushButton" name="poly">
     <property name="geometry">
      <rect>
       <x>580</x>
