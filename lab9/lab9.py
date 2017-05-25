@@ -250,23 +250,17 @@ def is_intersection(ed1, ed2, norm):
 
         t = delta_t / delta
 
-        if 0 <= t <= 1:
-
-            I = QPointF()
-            I.setX(ed1[0].x() + (ed1[1].x() - ed1[0].x()) * t)
-            I.setY(ed1[0].y() + (ed1[1].y() - ed1[0].y()) * t)
-
-            return I
-        else:
-            return False
-
-
+        I = QPointF()
+        I.setX(ed1[0].x() + (ed1[1].x() - ed1[0].x()) * t)
+        I.setY(ed1[0].y() + (ed1[1].y() - ed1[0].y()) * t)
+        return I
     else:
         return False
 
 
 def is_visiable(point, peak1, peak2, norm):
-    if norm * vector([peak1, point], [peak1, peak2]) <= 0:
+    v = vector([point, peak1], [peak2, peak1])
+    if norm *  v <= 0:
         return True
     else:
         return False
@@ -277,7 +271,7 @@ def vector(v1, v2):
     y1 = v1[0].y() - v1[1].y()
 
     x2 = v2[0].x() - v2[1].x()
-    y2 = v2[0].y() - v1[1].y()
+    y2 = v2[0].y() - v2[1].y()
 
     return x1 * y2 - x2 * y1
 
@@ -302,7 +296,7 @@ def clipping(win):
                 win.scene.addPolygon(p, win.pen)
                 win.pen.setWidth(1)
 
-# correct
+
 def sutherland_hodgman(clip, pol, norm):
     # дублируем начальную вершину отсекателя в конец
     clip.append(clip[0])
@@ -330,7 +324,6 @@ def sutherland_hodgman(clip, pol, norm):
                 new.append(t)
 
             pol = copy.deepcopy(new)
-            print(new)
 
     if len(pol) == 0:
         return False
