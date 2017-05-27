@@ -83,6 +83,7 @@
 <li> in lab 3: неудачный цикл в Цда
 <li> exam #2:  дописать вывод формул 
 <li>дописать алг ву
+<li>исправить сазерленда-ходжмена
 </ul>
 
 #### Run `pip3 install -r requirements.txt` to install all dependencies at once.
