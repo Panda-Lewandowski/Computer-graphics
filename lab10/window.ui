@@ -148,13 +148,16 @@
      </rect>
     </property>
     <property name="minimum">
-     <number>-45</number>
+     <number>-180</number>
     </property>
     <property name="maximum">
-     <number>45</number>
+     <number>180</number>
     </property>
     <property name="value">
      <number>20</number>
+    </property>
+    <property name="wrapping">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QDial" name="dial_y">
@@ -167,13 +170,16 @@
      </rect>
     </property>
     <property name="minimum">
-     <number>-45</number>
+     <number>-180</number>
     </property>
     <property name="maximum">
-     <number>45</number>
+     <number>180</number>
     </property>
     <property name="value">
      <number>-10</number>
+    </property>
+    <property name="wrapping">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QDial" name="dial_z">
@@ -186,13 +192,16 @@
      </rect>
     </property>
     <property name="minimum">
-     <number>-25</number>
+     <number>-45</number>
     </property>
     <property name="maximum">
-     <number>25</number>
+     <number>45</number>
     </property>
     <property name="value">
      <number>0</number>
+    </property>
+    <property name="wrapping">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QLabel" name="label_5">
