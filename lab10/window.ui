@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Отсечение отрезков выпуклым отсекателем</string>
+   <string>Алгоритм плавающего горизонта</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QGraphicsView" name="view">
@@ -24,22 +24,6 @@
      </rect>
     </property>
    </widget>
-   <widget class="QSpinBox" name="dx">
-    <property name="geometry">
-     <rect>
-      <x>740</x>
-      <y>120</y>
-      <width>48</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="minimum">
-     <number>1</number>
-    </property>
-    <property name="maximum">
-     <number>711</number>
-    </property>
-   </widget>
    <widget class="QSpinBox" name="z_max">
     <property name="geometry">
      <rect>
@@ -50,10 +34,13 @@
      </rect>
     </property>
     <property name="minimum">
-     <number>1</number>
+     <number>-601</number>
     </property>
     <property name="maximum">
      <number>601</number>
+    </property>
+    <property name="value">
+     <number>5</number>
     </property>
    </widget>
    <widget class="QSpinBox" name="x_min">
@@ -66,26 +53,13 @@
      </rect>
     </property>
     <property name="minimum">
-     <number>1</number>
+     <number>-711</number>
     </property>
     <property name="maximum">
      <number>711</number>
     </property>
-   </widget>
-   <widget class="QSpinBox" name="dz">
-    <property name="geometry">
-     <rect>
-      <x>740</x>
-      <y>300</y>
-      <width>48</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="minimum">
-     <number>1</number>
-    </property>
-    <property name="maximum">
-     <number>601</number>
+    <property name="value">
+     <number>-5</number>
     </property>
    </widget>
    <widget class="QLabel" name="label">
@@ -173,6 +147,12 @@
       <height>64</height>
      </rect>
     </property>
+    <property name="minimum">
+     <number>-45</number>
+    </property>
+    <property name="maximum">
+     <number>45</number>
+    </property>
    </widget>
    <widget class="QDial" name="dial_y">
     <property name="geometry">
@@ -183,6 +163,15 @@
       <height>64</height>
      </rect>
     </property>
+    <property name="minimum">
+     <number>-45</number>
+    </property>
+    <property name="maximum">
+     <number>45</number>
+    </property>
+    <property name="value">
+     <number>0</number>
+    </property>
    </widget>
    <widget class="QDial" name="dial_z">
     <property name="geometry">
@@ -192,6 +181,15 @@
       <width>50</width>
       <height>64</height>
      </rect>
+    </property>
+    <property name="minimum">
+     <number>-25</number>
+    </property>
+    <property name="maximum">
+     <number>25</number>
+    </property>
+    <property name="value">
+     <number>0</number>
     </property>
    </widget>
    <widget class="QLabel" name="label_5">
@@ -261,10 +259,13 @@
      </rect>
     </property>
     <property name="minimum">
-     <number>1</number>
+     <number>-711</number>
     </property>
     <property name="maximum">
      <number>711</number>
+    </property>
+    <property name="value">
+     <number>5</number>
     </property>
    </widget>
    <widget class="QLabel" name="label_8">
@@ -347,10 +348,13 @@
      </rect>
     </property>
     <property name="minimum">
-     <number>1</number>
+     <number>-601</number>
     </property>
     <property name="maximum">
      <number>601</number>
+    </property>
+    <property name="value">
+     <number>-5</number>
     </property>
    </widget>
    <widget class="QLabel" name="label_11">
@@ -389,6 +393,38 @@
     </property>
     <property name="text">
      <string>Отобразить</string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="dx">
+    <property name="geometry">
+     <rect>
+      <x>730</x>
+      <y>120</y>
+      <width>68</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="singleStep">
+     <double>0.100000000000000</double>
+    </property>
+    <property name="value">
+     <double>0.100000000000000</double>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="dz">
+    <property name="geometry">
+     <rect>
+      <x>730</x>
+      <y>300</y>
+      <width>68</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="singleStep">
+     <double>0.100000000000000</double>
+    </property>
+    <property name="value">
+     <double>0.300000000000000</double>
     </property>
    </widget>
   </widget>
