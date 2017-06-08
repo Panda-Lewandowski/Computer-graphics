@@ -1,5 +1,6 @@
 from PyQt5.QtCore import Qt
 
+
 def sign(x):
     if not x:
         return 0
@@ -15,6 +16,7 @@ def horizon(x1, y1, x2, y2, top, bottom, image):
     dy = y2 - y1
     sx = sign(dx)
     sy = sign(dy)
+    #print(x1, y1, x2, y2, "\n")
     dx = abs(dx)
     dy = abs(dy)
 
@@ -22,11 +24,11 @@ def horizon(x1, y1, x2, y2, top, bottom, image):
     if dx == 0 and dy == 0 and 0 <= x < image.width():
         if y >= top[x]:
             top[x] = y
-            image.setPixel(round(x), round(image.height() - y), Qt.black)
+            image.setPixel(x, image.height() - y, Qt.white)
 
         if y <= bottom[x]:
             bottom[x] = y
-            image.setPixel(round(x), round(image.height() - y), Qt.black)
+            image.setPixel(x, image.height() - y, Qt.white)
 
         return top, bottom
 
@@ -47,12 +49,12 @@ def horizon(x1, y1, x2, y2, top, bottom, image):
             if y >= top[x]:
                 if y >= y_max_curr:
                     y_max_curr = y
-                image.setPixel(round(x), round(image.height() - y), Qt.black)
+                image.setPixel(x, image.height() - y, Qt.white)
 
             if y <= bottom[x]:
                 if y <= y_min_curr:
                     y_min_curr = y
-                image.setPixel(round(x), round(image.height() - y), Qt.black)
+                image.setPixel(x, image.height() - y, Qt.white)
 
         if e >= 0:
             if change:
@@ -68,7 +70,7 @@ def horizon(x1, y1, x2, y2, top, bottom, image):
                 y += sy
 
             e -= 2 * dx
-        else:
+        if e < 0:
             if not change:
                 top[x] = y_max_curr
                 bottom[x] = y_min_curr
@@ -84,6 +86,7 @@ def horizon(x1, y1, x2, y2, top, bottom, image):
             e += 2 * dy
 
         i += 1
+
     return top, bottom
 
 

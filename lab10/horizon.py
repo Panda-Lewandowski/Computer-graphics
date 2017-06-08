@@ -68,14 +68,15 @@ def float_horizon(scene_width, scene_hight, x_min, x_max, x_step, z_min, z_max, 
         x = x_min
         while x <= x_max:
             y = func(x, z)
-            x_curr = x
-            y_curr = y
-            x_curr, y_curr, z_buf = tranform(x_curr, y_curr, z, tx, ty, tz)
+            x_curr, y_curr, z_buf = tranform(x, y, z, tx, ty, tz)
 
             # Добавление в горизонт и  отрисовка линий
+            #начинает рисовать не от предыдущей а уже от преобразованной
             top, bottom = horizon(x_prev, y_prev, x_curr, y_curr, top, bottom, image)
             x_prev = x_curr
             y_prev = y_curr
+
+            #top, bottom = horizon(x_prev, y_prev, x_curr, y_curr, top, bottom, image)
 
             x += x_step
 
