@@ -7,7 +7,7 @@
 | ------------- |:-------------:|:-------------:|
 | Lab 1| ✅ |<a href="../blob/master/lab1/README.md">Task</a>|
 | Lab 2| ✅ |<a href="../blob/master/lab2/README.md">Task</a>|
-| Lab 3| ✅ |<a href="../blob/master/lab3/README.md">Task</a>|
+| Lab 3| ✅ |<a href="../../blob/master/lab3/README.md">Task</a>|
 | Lab 4| ♻️ |<a href="../blob/master/lab4/README.md">Task</a>|
 | Lab 5| ♻️ |<a href="../blob/master/lab5/README.md">Task</a>|
 | Lab 6| ✅ |<a href="../blob/master/lab3/README.md">Task</a>|
