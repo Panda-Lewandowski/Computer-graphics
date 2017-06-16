@@ -127,13 +127,10 @@ def fill_xor(win):
             continue
         # иначе определяем границы сканирования
         if ed[1] > ed[3]:
-            tmp = ed[1]
-            ed[1] = ed[3]
-            ed[3] = tmp
+            ed[1], ed[3] = ed[3], ed[1]
 
-            tmp = ed[0]
-            ed[0] = ed[2]
-            ed[2] = tmp
+            ed[0], ed[2] = ed[2], ed[0]
+            
 
         y = ed[1]
         end_y = ed[3]
